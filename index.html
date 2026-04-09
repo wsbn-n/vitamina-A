@@ -34,8 +34,57 @@
         .subtitle {
             color: #f0f0f0;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 1.1em;
+        }
+
+        .status-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        .status-icon.loading {
+            background: #ed8936;
+        }
+
+        .status-icon.error {
+            background: #f56565;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .status-text {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .last-update-status {
+            color: #666;
+            font-size: 14px;
         }
 
         .tabs {
@@ -72,110 +121,6 @@
 
         .tab-content.active {
             display: block;
-        }
-
-        .config-panel {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .config-section {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .config-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .config-section h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .config-row {
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .config-group {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .config-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .config-group select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .config-group select:disabled {
-            background: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: transform 0.2s, background 0.3s;
-        }
-
-        .btn:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-success {
-            background: #48bb78;
-        }
-
-        .btn-success:hover {
-            background: #38a169;
-        }
-
-        .btn-warning {
-            background: #ed8936;
-        }
-
-        .btn-warning:hover {
-            background: #dd6b20;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-            margin: 0 5px;
         }
 
         .card {
@@ -318,72 +263,41 @@
             opacity: 0.95;
         }
 
-        .info-message {
-            background: #bee3f8;
-            color: #2c5282;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .error-message {
-            background: #fed7d7;
-            color: #742a2a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .success-message {
-            background: #c6f6d5;
-            color: #22543d;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .last-update {
-            text-align: right;
-            color: #888;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
         .loading {
             text-align: center;
             padding: 40px;
             color: #666;
         }
 
-        .sheet-status {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-small:hover {
+            background: #5a67d8;
+        }
+
+        .refresh-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
             font-size: 14px;
-        }
-
-        .sheet-status.info {
-            background: #bee3f8;
-            color: #2c5282;
-        }
-
-        .sheet-status.success {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .sheet-status.error {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .auto-load-info {
-            background: #f0f4ff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            color: #667eea;
             font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #38a169;
         }
 
         @media (max-width: 768px) {
@@ -402,6 +316,12 @@
             .summary-cards {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -410,35 +330,16 @@
         <h1>💊 Monitoramento de Vitamina A</h1>
         <div class="subtitle">Estado do Tocantins - 139 Municípios</div>
         
-        <!-- Painel de Configuração -->
-        <div class="config-panel">
-            <div class="auto-load-info">
-                ✅ Planilha configurada - Carregamento automático ativado
+        <!-- Barra de Status Simplificada -->
+        <div class="status-bar">
+            <div class="status-message">
+                <span class="status-icon" id="statusIcon"></span>
+                <span class="status-text" id="statusText">Carregando dados...</span>
             </div>
-            
-            <div class="config-section">
-                <h3>📋 Selecione as Abas para Carregar</h3>
-                <div class="config-row">
-                    <div class="config-group">
-                        <label>📦 Aba de Movimentações:</label>
-                        <select id="movSheetSelect" disabled>
-                            <option value="">Carregando abas disponíveis...</option>
-                        </select>
-                    </div>
-                    <div class="config-group">
-                        <label>🎯 Aba de Metas:</label>
-                        <select id="metaSheetSelect" disabled>
-                            <option value="">Carregando abas disponíveis...</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="margin-top: 15px;">
-                    <button class="btn btn-success" onclick="loadMovimentacoesData()" id="btnLoadMov" disabled>📥 Carregar Movimentações</button>
-                    <button class="btn btn-success" onclick="loadMetasData()" id="btnLoadMeta" disabled style="margin-left: 10px;">📥 Carregar Metas</button>
-                    <button class="btn btn-warning" onclick="recarregarPlanilha()" style="margin-left: 10px;">🔄 Recarregar Abas</button>
-                </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span class="last-update-status" id="globalLastUpdate"></span>
+                <button class="refresh-btn" onclick="recarregarTudo()">🔄 Atualizar Dados</button>
             </div>
-            <div id="sheetStatus" class="sheet-status info"></div>
         </div>
 
         <div class="tabs">
@@ -450,8 +351,6 @@
         <div id="tab-movimentacoes" class="tab-content active">
             <div class="card">
                 <h2>📦 Estoque de Vitamina A</h2>
-                
-                <div id="movStatus"></div>
 
                 <div class="filter-bar">
                     <input type="text" id="searchMunicipioMov" placeholder="🔍 Filtrar por município..." oninput="filterMovTable()">
@@ -481,7 +380,7 @@
                             </tr>
                         </thead>
                         <tbody id="movTableBody">
-                            <tr><td colspan="6" class="loading">Aguardando carregamento dos dados</td></tr>
+                            <tr><td colspan="6" class="loading">Carregando dados...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -494,8 +393,6 @@
         <div id="tab-metas" class="tab-content">
             <div class="card">
                 <h2>🎯 Metas e Saldos por Município</h2>
-                
-                <div id="metaStatus"></div>
 
                 <div class="summary-cards" id="metaSummary">
                     <!-- Resumo será preenchido via JavaScript -->
@@ -532,7 +429,7 @@
                             </tr>
                         </thead>
                         <tbody id="metaTableBody">
-                            <tr><td colspan="8" class="loading">Aguardando carregamento dos dados</td></tr>
+                            <tr><td colspan="8" class="loading">Carregando dados...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -548,6 +445,10 @@
         // ============================================================
         const SHEET_ID = '108lJlhQu80SD_9n8rW1c4oLbybj9TtkK'; // <-- COLE O ID DA PLANILHA AQUI (entre /d/ e /edit)
         // Exemplo: const SHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+        
+        // Nomes das abas (configure conforme sua planilha)
+        const ABA_MOVIMENTACOES = 'Movimentações'; // <-- Nome da aba de movimentações
+        const ABA_METAS = 'Metas';         // <-- Nome da aba de metas
         // ============================================================
 
         // Lista completa dos 139 municípios do Tocantins
@@ -582,72 +483,121 @@
             "Tupiratins", "Wanderlândia", "Xambioá"
         ];
 
-        // Dados das movimentações
+        // Dados
         let movimentacoes = [];
-        let movLastUpdate = null;
-
-        // Dados das metas
         let metasData = {};
-        let metaLastUpdate = null;
-
-        // Abas disponíveis
-        let availableSheets = [];
+        let carregamentoConcluido = { mov: false, meta: false };
 
         // Inicialização automática
         document.addEventListener('DOMContentLoaded', function() {
             // Verificar se o ID foi configurado
-            if (SHEET_ID === 'S108lJlhQu80SD_9n8rW1c4oLbybj9TtkK') {
-                showSheetStatus('⚠️ Configure o ID da planilha no código (linha ~330)', 'error');
-                document.getElementById('movSheetSelect').innerHTML = '<option value="">Configure o ID da planilha</option>';
-                document.getElementById('metaSheetSelect').innerHTML = '<option value="">Configure o ID da planilha</option>';
+            if (SHEET_ID === '108lJlhQu80SD_9n8rW1c4oLbybj9TtkK') {
+                updateStatus('⚠️ Configure o ID da planilha no código', 'error');
+                document.getElementById('movTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Configure o ID da planilha no código</td></tr>';
+                document.getElementById('metaTableBody').innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Configure o ID da planilha no código</td></tr>';
                 return;
             }
             
             loadSavedData();
-            carregarAbasAutomaticamente();
+            carregarTudoAutomaticamente();
         });
 
         function loadSavedData() {
-            // Carregar movimentações salvas
+            // Carregar dados salvos do localStorage primeiro (para exibição imediata)
             const savedMov = localStorage.getItem('vitaminaA_movimentacoes');
-            const savedMovTime = localStorage.getItem('vitaminaA_mov_time');
-            
             if (savedMov) {
                 try {
                     movimentacoes = JSON.parse(savedMov);
-                    movLastUpdate = savedMovTime;
                     updateMovTable();
-                } catch (e) {
-                    console.error('Erro ao carregar movimentações:', e);
-                }
+                } catch (e) {}
             }
 
-            // Carregar metas salvas
             const savedMetas = localStorage.getItem('vitaminaA_metas');
-            const savedMetasTime = localStorage.getItem('vitaminaA_metas_time');
-            
             if (savedMetas) {
                 try {
                     metasData = JSON.parse(savedMetas);
-                    metaLastUpdate = savedMetasTime;
                     updateMetaTable();
                     updateMetaSummary();
-                } catch (e) {
-                    console.error('Erro ao carregar metas:', e);
-                }
+                } catch (e) {}
             }
         }
 
-        // Carregar abas automaticamente ao iniciar
-        async function carregarAbasAutomaticamente() {
-            showSheetStatus('Carregando abas da planilha...', 'info');
-            await discoverSheets(SHEET_ID);
+        async function carregarTudoAutomaticamente() {
+            updateStatus('Carregando dados da planilha...', 'loading');
+            
+            try {
+                // Carregar movimentações e metas em paralelo
+                await Promise.all([
+                    carregarMovimentacoes(),
+                    carregarMetas()
+                ]);
+                
+                updateStatus('✅ Planilha configurada - Dados carregados com sucesso', 'success');
+                updateGlobalLastUpdate();
+            } catch (error) {
+                console.error('Erro no carregamento:', error);
+                updateStatus('⚠️ Erro ao carregar alguns dados. Tente atualizar.', 'error');
+            }
         }
 
-        // Recarregar planilha (função pública)
-        async function recarregarPlanilha() {
-            showSheetStatus('Recarregando abas da planilha...', 'info');
-            await discoverSheets(SHEET_ID);
+        async function carregarMovimentacoes() {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ABA_MOVIMENTACOES)}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                
+                const csvText = await response.text();
+                if (csvText.includes('<!DOCTYPE html>')) throw new Error('Planilha não publicada');
+                
+                parseMovimentacoesCSV(csvText);
+                carregamentoConcluido.mov = true;
+            } catch (error) {
+                console.error('Erro movimentações:', error);
+                carregamentoConcluido.mov = false;
+                throw error;
+            }
+        }
+
+        async function carregarMetas() {
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ABA_METAS)}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                
+                const csvText = await response.text();
+                if (csvText.includes('<!DOCTYPE html>')) throw new Error('Planilha não publicada');
+                
+                parseMetasCSV(csvText);
+                carregamentoConcluido.meta = true;
+            } catch (error) {
+                console.error('Erro metas:', error);
+                carregamentoConcluido.meta = false;
+                throw error;
+            }
+        }
+
+        async function recarregarTudo() {
+            updateStatus('Atualizando dados...', 'loading');
+            await carregarTudoAutomaticamente();
+        }
+
+        function updateStatus(message, type) {
+            const statusText = document.getElementById('statusText');
+            const statusIcon = document.getElementById('statusIcon');
+            
+            statusText.textContent = message;
+            statusIcon.className = 'status-icon';
+            
+            if (type === 'loading') {
+                statusIcon.classList.add('loading');
+            } else if (type === 'error') {
+                statusIcon.classList.add('error');
+            }
+        }
+
+        function updateGlobalLastUpdate() {
+            const now = new Date().toLocaleString('pt-BR');
+            document.getElementById('globalLastUpdate').textContent = `Última atualização: ${now}`;
         }
 
         // Trocar entre abas
@@ -663,172 +613,28 @@
             event.target.classList.add('active');
         }
 
-        // Descobrir abas disponíveis
-        async function discoverSheets(sheetId) {
-            const commonSheetNames = [
-                'Página1', 'Página2', 'Página3', 'Página4', 'Página5',
-                'Sheet1', 'Sheet2', 'Sheet3', 'Sheet4', 'Sheet5',
-                'Movimentações', 'Metas', 'movimentacoes', 'metas', 
-                'Estoque', 'Saldos', 'Entradas', 'Saidas',
-                'VitaminaA', 'Dados', 'Planilha1', 'Planilha2'
-            ];
-            const foundSheets = [];
-            
-            for (const sheetName of commonSheetNames) {
-                try {
-                    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-                    const response = await fetch(url);
-                    const text = await response.text();
-                    
-                    if (text && !text.includes('<!DOCTYPE html>') && !text.includes('_bootstrap') && text.trim().length > 0) {
-                        foundSheets.push(sheetName);
-                    }
-                } catch (e) {
-                    // Ignorar erros
-                }
-            }
-            
-            availableSheets = foundSheets;
-            updateSheetSelects();
-            
-            if (foundSheets.length > 0) {
-                showSheetStatus(`${foundSheets.length} aba(s) encontrada(s)! Selecione nos menus acima.`, 'success');
-            } else {
-                showSheetStatus('Nenhuma aba encontrada. Verifique se a planilha está publicada.', 'error');
-                enableManualSheetInput();
-            }
-        }
-
-        function updateSheetSelects() {
-            const movSelect = document.getElementById('movSheetSelect');
-            const metaSelect = document.getElementById('metaSheetSelect');
-            
-            movSelect.innerHTML = '<option value="">Selecione a aba de movimentações</option>';
-            metaSelect.innerHTML = '<option value="">Selecione a aba de metas</option>';
-            
-            if (availableSheets.length > 0) {
-                availableSheets.forEach(sheet => {
-                    movSelect.innerHTML += `<option value="${sheet}">${sheet}</option>`;
-                    metaSelect.innerHTML += `<option value="${sheet}">${sheet}</option>`;
-                });
-                
-                movSelect.disabled = false;
-                metaSelect.disabled = false;
-                document.getElementById('btnLoadMov').disabled = false;
-                document.getElementById('btnLoadMeta').disabled = false;
-                
-                // Tentar selecionar automaticamente
-                const movSheet = availableSheets.find(s => 
-                    s.toLowerCase().includes('mov') || 
-                    s.toLowerCase().includes('entrada') || 
-                    s.toLowerCase().includes('estoque') ||
-                    s === 'Página1'
-                );
-                const metaSheet = availableSheets.find(s => 
-                    s.toLowerCase().includes('meta') || 
-                    s.toLowerCase().includes('saldo') || 
-                    s.toLowerCase().includes('objetivo') ||
-                    s === 'Página2'
-                );
-                
-                if (movSheet) movSelect.value = movSheet;
-                if (metaSheet) metaSelect.value = metaSheet;
-            }
-        }
-
-        function enableManualSheetInput() {
-            const movSelect = document.getElementById('movSheetSelect');
-            const metaSelect = document.getElementById('metaSheetSelect');
-            
-            movSelect.innerHTML = '<option value="">Digite o nome da aba abaixo</option>';
-            metaSelect.innerHTML = '<option value="">Digite o nome da aba abaixo</option>';
-            
-            movSelect.outerHTML = `<input type="text" id="movSheetSelect" placeholder="Ex: Página1" class="manual-input" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">`;
-            metaSelect.outerHTML = `<input type="text" id="metaSheetSelect" placeholder="Ex: Página2" class="manual-input" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">`;
-            
-            document.getElementById('btnLoadMov').disabled = false;
-            document.getElementById('btnLoadMeta').disabled = false;
-        }
-
-        function showSheetStatus(message, type) {
-            const statusDiv = document.getElementById('sheetStatus');
-            statusDiv.className = `sheet-status ${type}`;
-            statusDiv.innerHTML = message;
-        }
-
-        // Construir URL do Google Sheets CSV
-        function buildGoogleSheetsUrl(sheetName) {
-            return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-        }
-
         // Formatar data para DD/MM/AAAA
         function formatDateBR(dateStr) {
             if (!dateStr) return '';
             
-            let day, month, year;
-            
-            // Formato ISO: YYYY-MM-DD
             if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
                 const parts = dateStr.split('-');
-                year = parts[0];
-                month = parts[1];
-                day = parts[2].substring(0, 2);
-                return `${day}/${month}/${year}`;
+                return `${parts[2].substring(0,2)}/${parts[1]}/${parts[0]}`;
             }
             
-            // Formato US: MM/DD/YYYY
             if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
                 const parts = dateStr.split('/');
-                month = parts[0].padStart(2, '0');
-                day = parts[1].padStart(2, '0');
-                year = parts[2];
-                return `${day}/${month}/${year}`;
+                return `${parts[1].padStart(2,'0')}/${parts[0].padStart(2,'0')}/${parts[2]}`;
             }
             
-            // Formato BR: DD/MM/YYYY (já está correto)
             return dateStr;
         }
 
-        // ============ FUNÇÕES PARA MOVIMENTAÇÕES ============
+        // ============ MOVIMENTAÇÕES ============
         
-        async function loadMovimentacoesData() {
-            const sheetSelect = document.getElementById('movSheetSelect');
-            const sheetName = sheetSelect.value.trim();
-            
-            if (!sheetName) {
-                showMovError('Por favor, selecione ou digite o nome da aba');
-                return;
-            }
-
-            showMovLoading();
-            
-            try {
-                const url = buildGoogleSheetsUrl(sheetName);
-                console.log('Carregando URL:', url);
-                
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                
-                const csvText = await response.text();
-                
-                if (csvText.includes('<!DOCTYPE html>') || csvText.includes('_bootstrap')) {
-                    throw new Error('A planilha não está publicada corretamente.');
-                }
-                
-                parseMovimentacoesCSV(csvText);
-                showMovSuccess('Dados de movimentações carregados com sucesso!');
-            } catch (error) {
-                console.error('Erro:', error);
-                showMovError(`Erro ao carregar: ${error.message}`);
-            }
-        }
-
         function parseMovimentacoesCSV(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length < 2) {
-                showMovError('A planilha está vazia ou não contém dados');
-                return;
-            }
+            if (lines.length < 2) return;
 
             const newMovimentacoes = [];
 
@@ -837,73 +643,43 @@
                 if (!line.trim()) continue;
                 
                 const columns = parseCSVLine(line);
-                if (columns.length < 6) {
-                    console.warn(`Linha ${i + 1} ignorada: número insuficiente de colunas`);
-                    continue;
-                }
+                if (columns.length < 6) continue;
 
                 let [municipio, concentracao, status, data, quantidade, lote] = columns;
                 
                 municipio = municipio.replace(/^"|"$/g, '').trim();
                 concentracao = concentracao.replace(/^"|"$/g, '').trim();
                 status = status.replace(/^"|"$/g, '').trim();
-                data = data.replace(/^"|"$/g, '').trim();
+                data = formatDateBR(data.replace(/^"|"$/g, '').trim());
                 lote = lote.replace(/^"|"$/g, '').trim();
                 
-                data = formatDateBR(data);
-                
-                let qty = quantidade.replace(/^"|"$/g, '').replace(',', '.');
-                qty = parseFloat(qty);
-                
+                let qty = parseFloat(quantidade.replace(/^"|"$/g, '').replace(',', '.'));
                 if (isNaN(qty)) continue;
 
-                newMovimentacoes.push({
-                    municipio,
-                    concentracao,
-                    status,
-                    data,
-                    quantidade: qty,
-                    lote
-                });
+                newMovimentacoes.push({ municipio, concentracao, status, data, quantidade: qty, lote });
             }
 
             movimentacoes = newMovimentacoes;
-            movLastUpdate = new Date().toLocaleString('pt-BR');
-            
             localStorage.setItem('vitaminaA_movimentacoes', JSON.stringify(movimentacoes));
-            localStorage.setItem('vitaminaA_mov_time', movLastUpdate);
+            localStorage.setItem('vitaminaA_mov_time', new Date().toLocaleString('pt-BR'));
             
             updateMovTable();
         }
 
         function updateMovTable() {
             const tbody = document.getElementById('movTableBody');
-            const lastUpdateDiv = document.getElementById('movLastUpdate');
-            
             let filteredData = [...movimentacoes];
             
             const searchTerm = document.getElementById('searchMunicipioMov')?.value.toLowerCase() || '';
             const filterConc = document.getElementById('filterConcentracaoMov')?.value || '';
             const filterStatus = document.getElementById('filterStatusMov')?.value || '';
             
-            if (searchTerm) {
-                filteredData = filteredData.filter(item => 
-                    item.municipio.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            if (filterConc) {
-                filteredData = filteredData.filter(item => item.concentracao === filterConc);
-            }
-            
-            if (filterStatus) {
-                filteredData = filteredData.filter(item => item.status === filterStatus);
-            }
+            if (searchTerm) filteredData = filteredData.filter(item => item.municipio.toLowerCase().includes(searchTerm));
+            if (filterConc) filteredData = filteredData.filter(item => item.concentracao === filterConc);
+            if (filterStatus) filteredData = filteredData.filter(item => item.status === filterStatus);
             
             filteredData.sort((a, b) => {
-                if (a.municipio !== b.municipio) {
-                    return a.municipio.localeCompare(b.municipio);
-                }
+                if (a.municipio !== b.municipio) return a.municipio.localeCompare(b.municipio);
                 return a.concentracao.localeCompare(b.concentracao);
             });
             
@@ -928,55 +704,19 @@
                 }).join('');
             }
             
-            if (movLastUpdate) {
-                lastUpdateDiv.innerHTML = `Última atualização: ${movLastUpdate}`;
+            const savedTime = localStorage.getItem('vitaminaA_mov_time');
+            if (savedTime) {
+                document.getElementById('movLastUpdate').innerHTML = `Última atualização: ${savedTime}`;
             }
         }
 
-        function filterMovTable() {
-            updateMovTable();
-        }
+        function filterMovTable() { updateMovTable(); }
 
-        // ============ FUNÇÕES PARA METAS ============
+        // ============ METAS ============
         
-        async function loadMetasData() {
-            const sheetSelect = document.getElementById('metaSheetSelect');
-            const sheetName = sheetSelect.value.trim();
-            
-            if (!sheetName) {
-                showMetaError('Por favor, selecione ou digite o nome da aba');
-                return;
-            }
-
-            showMetaLoading();
-            
-            try {
-                const url = buildGoogleSheetsUrl(sheetName);
-                console.log('Carregando URL:', url);
-                
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                
-                const csvText = await response.text();
-                
-                if (csvText.includes('<!DOCTYPE html>') || csvText.includes('_bootstrap')) {
-                    throw new Error('A planilha não está publicada corretamente.');
-                }
-                
-                parseMetasCSV(csvText);
-                showMetaSuccess('Dados de metas carregados com sucesso!');
-            } catch (error) {
-                console.error('Erro:', error);
-                showMetaError(`Erro ao carregar: ${error.message}`);
-            }
-        }
-
         function parseMetasCSV(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length < 2) {
-                showMetaError('A planilha está vazia ou não contém dados');
-                return;
-            }
+            if (lines.length < 2) return;
 
             const newMetasData = {};
 
@@ -991,33 +731,24 @@
                 
                 municipio = municipio.replace(/^"|"$/g, '').trim();
                 
-                const m100 = parseFloat(meta100.replace(/^"|"$/g, '').replace(',', '.')) || 0;
-                const s100 = parseFloat(saldo100.replace(/^"|"$/g, '').replace(',', '.')) || 0;
-                const m200 = parseFloat(meta200.replace(/^"|"$/g, '').replace(',', '.')) || 0;
-                const s200 = parseFloat(saldo200.replace(/^"|"$/g, '').replace(',', '.')) || 0;
-
                 newMetasData[municipio] = {
-                    meta100: m100,
-                    saldo100: s100,
-                    meta200: m200,
-                    saldo200: s200
+                    meta100: parseFloat(meta100.replace(/^"|"$/g, '').replace(',', '.')) || 0,
+                    saldo100: parseFloat(saldo100.replace(/^"|"$/g, '').replace(',', '.')) || 0,
+                    meta200: parseFloat(meta200.replace(/^"|"$/g, '').replace(',', '.')) || 0,
+                    saldo200: parseFloat(saldo200.replace(/^"|"$/g, '').replace(',', '.')) || 0
                 };
             }
 
             metasData = newMetasData;
-            metaLastUpdate = new Date().toLocaleString('pt-BR');
-            
             localStorage.setItem('vitaminaA_metas', JSON.stringify(metasData));
-            localStorage.setItem('vitaminaA_metas_time', metaLastUpdate);
+            localStorage.setItem('vitaminaA_metas_time', new Date().toLocaleString('pt-BR'));
             
             updateMetaTable();
             updateMetaSummary();
         }
 
         function updateMetaSummary() {
-            const summaryDiv = document.getElementById('metaSummary');
             const municipios = Object.keys(metasData);
-            
             const totalMeta100 = municipios.reduce((sum, m) => sum + (metasData[m].meta100 || 0), 0);
             const totalSaldo100 = municipios.reduce((sum, m) => sum + (metasData[m].saldo100 || 0), 0);
             const totalMeta200 = municipios.reduce((sum, m) => sum + (metasData[m].meta200 || 0), 0);
@@ -1026,8 +757,7 @@
             const percentual100 = totalMeta100 > 0 ? (totalSaldo100 / totalMeta100 * 100) : 0;
             const percentual200 = totalMeta200 > 0 ? (totalSaldo200 / totalMeta200 * 100) : 0;
             
-            // Apenas 4 cards (removido o de municípios cadastrados)
-            summaryDiv.innerHTML = `
+            document.getElementById('metaSummary').innerHTML = `
                 <div class="summary-card">
                     <h3>${totalMeta100.toLocaleString('pt-BR')}</h3>
                     <p>Meta Total 100.000UI</p>
@@ -1051,16 +781,12 @@
 
         function updateMetaTable() {
             const tbody = document.getElementById('metaTableBody');
-            const lastUpdateDiv = document.getElementById('metaLastUpdate');
-            
             let municipios = Object.keys(metasData);
             
             const searchTerm = document.getElementById('searchMunicipioMeta')?.value.toLowerCase() || '';
             const filterStatus = document.getElementById('filterStatusMeta')?.value || '';
             
-            if (searchTerm) {
-                municipios = municipios.filter(m => m.toLowerCase().includes(searchTerm));
-            }
+            if (searchTerm) municipios = municipios.filter(m => m.toLowerCase().includes(searchTerm));
             
             if (filterStatus) {
                 municipios = municipios.filter(m => {
@@ -1116,33 +842,29 @@
                                 </div>
                             </td>
                             <td>
-                                <button class="btn-small btn" onclick="editMeta('${municipio}')">✏️</button>
+                                <button class="btn-small" onclick="editMeta('${municipio}')">✏️</button>
                             </td>
                         </tr>
                     `;
                 }).join('');
             }
             
-            if (metaLastUpdate) {
-                lastUpdateDiv.innerHTML = `Última atualização: ${metaLastUpdate}`;
+            const savedTime = localStorage.getItem('vitaminaA_metas_time');
+            if (savedTime) {
+                document.getElementById('metaLastUpdate').innerHTML = `Última atualização: ${savedTime}`;
             }
         }
 
-        function filterMetaTable() {
-            updateMetaTable();
-        }
+        function filterMetaTable() { updateMetaTable(); }
 
         function editMeta(municipio) {
             const data = metasData[municipio];
             const newMeta100 = prompt(`Meta 100.000UI para ${municipio}:`, data.meta100);
             if (newMeta100 === null) return;
-            
             const newSaldo100 = prompt(`Saldo 100.000UI para ${municipio}:`, data.saldo100);
             if (newSaldo100 === null) return;
-            
             const newMeta200 = prompt(`Meta 200.000UI para ${municipio}:`, data.meta200);
             if (newMeta200 === null) return;
-            
             const newSaldo200 = prompt(`Saldo 200.000UI para ${municipio}:`, data.saldo200);
             if (newSaldo200 === null) return;
             
@@ -1158,7 +880,7 @@
             updateMetaSummary();
         }
 
-        // ============ FUNÇÕES AUXILIARES ============
+        // ============ UTILITÁRIOS ============
         
         function parseCSVLine(line) {
             const result = [];
@@ -1167,60 +889,18 @@
             
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current);
-                    current = '';
-                } else {
-                    current += char;
-                }
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
+                else current += char;
             }
-            
             result.push(current);
             return result;
         }
 
-        // UI Functions
-        function showMovLoading() {
-            document.getElementById('movTableBody').innerHTML = '<tr><td colspan="6" class="loading">Carregando dados...</td></tr>';
-        }
-
-        function showMovError(message) {
-            const statusDiv = document.getElementById('movStatus');
-            statusDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
-            setTimeout(() => statusDiv.innerHTML = '', 8000);
-        }
-
-        function showMovSuccess(message) {
-            const statusDiv = document.getElementById('movStatus');
-            statusDiv.innerHTML = `<div class="success-message">✅ ${message}</div>`;
-            setTimeout(() => statusDiv.innerHTML = '', 3000);
-        }
-
-        function showMetaLoading() {
-            document.getElementById('metaTableBody').innerHTML = '<tr><td colspan="8" class="loading">Carregando dados...</td></tr>';
-        }
-
-        function showMetaError(message) {
-            const statusDiv = document.getElementById('metaStatus');
-            statusDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
-            setTimeout(() => statusDiv.innerHTML = '', 8000);
-        }
-
-        function showMetaSuccess(message) {
-            const statusDiv = document.getElementById('metaStatus');
-            statusDiv.innerHTML = `<div class="success-message">✅ ${message}</div>`;
-            setTimeout(() => statusDiv.innerHTML = '', 3000);
-        }
-
         // Funções globais
         window.switchTab = switchTab;
-        window.recarregarPlanilha = recarregarPlanilha;
-        window.loadMovimentacoesData = loadMovimentacoesData;
+        window.recarregarTudo = recarregarTudo;
         window.filterMovTable = filterMovTable;
-        window.loadMetasData = loadMetasData;
         window.filterMetaTable = filterMetaTable;
         window.editMeta = editMeta;
     </script>
