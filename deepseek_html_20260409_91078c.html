@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento de Vitamina A - Municípios do Tocantins</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            color: #f0f0f0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .config-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .config-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .config-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .config-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .config-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+
+        .summary-item h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .summary-item p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input, .filter-bar select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .stock-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .stock-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stock-table tr:hover {
+            background: #f7f7f7;
+        }
+
+        .low-stock {
+            background: #fed7d7 !important;
+        }
+
+        .critical-stock {
+            background: #feb2b2 !important;
+        }
+
+        .stock-status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .stock-status.normal {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .stock-status.low {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .stock-status.critical {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .concentration-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .concentration-100k {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .concentration-200k {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-message {
+            background: #bee3f8;
+            color: #2c5282;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .last-update {
+            text-align: right;
+            color: #888;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .stock-table {
+                font-size: 12px;
+            }
+            
+            .stock-table th, .stock-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💊 Monitoramento de Vitamina A</h1>
+        <div class="subtitle">Estado do Tocantins - 139 Municípios</div>
+        
+        <div class="config-panel">
+            <div class="config-row">
+                <div class="config-group">
+                    <label>📊 Link da Planilha Google Sheets (CSV):</label>
+                    <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv" value="">
+                </div>
+                <button class="btn btn-success" onclick="loadSheetData()">📥 Carregar Dados</button>
+                <button class="btn" onclick="useSampleData()">📋 Usar Dados de Exemplo</button>
+            </div>
+            <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                ⚠️ A planilha deve ter as colunas: Data, Tipo (ENTRADA/SAÍDA), Município, Quantidade, Concentração (100.000UI/200.000UI), Observações
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2>📊 Estoque Atual por Município</h2>
+                
+                <div class="summary" id="summary">
+                    <!-- Resumo será preenchido via JavaScript -->
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" id="searchMunicipio" placeholder="🔍 Filtrar por município..." oninput="filterTable()">
+                    <select id="filterConcentracao" onchange="filterTable()">
+                        <option value="">Todas as Concentrações</option>
+                        <option value="100.000UI">100.000UI</option>
+                        <option value="200.000UI">200.000UI</option>
+                    </select>
+                    <select id="filterStatus" onchange="filterTable()">
+                        <option value="">Todos os Status</option>
+                        <option value="normal">Normal (> 100)</option>
+                        <option value="low">Baixo (11-100)</option>
+                        <option value="critical">Crítico (≤ 10)</option>
+                    </select>
+                </div>
+
+                <div id="dataStatus"></div>
+
+                <div style="overflow-x: auto;">
+                    <table class="stock-table" id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Município</th>
+                                <th>Concentração</th>
+                                <th>Estoque Atual</th>
+                                <th>Status</th>
+                                <th>Última Movimentação</th>
+                                <th>Total Entradas</th>
+                                <th>Total Saídas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <tr><td colspan="7" class="loading">Aguardando carregamento dos dados</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="last-update" id="lastUpdate"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lista completa dos 139 municípios do Tocantins
+        const MUNICIPIOS_TOCANTINS = [
+            "Abreulândia", "Aguiarnópolis", "Aliança do Tocantins", "Almas", "Alvorada", 
+            "Ananás", "Angico", "Aparecida do Rio Negro", "Aragominas", "Araguacema", 
+            "Araguaçu", "Araguaína", "Araguanã", "Araguatins", "Arapoema", 
+            "Arraias", "Augustinópolis", "Aurora do Tocantins", "Axixá do Tocantins", "Babaçulândia", 
+            "Bandeirantes do Tocantins", "Barra do Ouro", "Barrolândia", "Bernardo Sayão", "Bom Jesus do Tocantins", 
+            "Brasilândia do Tocantins", "Brejinho de Nazaré", "Buriti do Tocantins", "Cachoeirinha", "Campos Lindos", 
+            "Cariri do Tocantins", "Carmolândia", "Carrasco Bonito", "Caseara", "Centenário", 
+            "Chapada da Natividade", "Chapada de Areia", "Colinas do Tocantins", "Colméia", "Combinado", 
+            "Conceição do Tocantins", "Couto Magalhães", "Cristalândia", "Crixás do Tocantins", "Darcinópolis", 
+            "Dianópolis", "Divinópolis do Tocantins", "Dois Irmãos do Tocantins", "Dueré", "Esperantina", 
+            "Fátima", "Figueirópolis", "Filadélfia", "Formoso do Araguaia", "Fortaleza do Tabocão", "Goianorte", 
+            "Goiatins", "Guaraí", "Gurupi", "Ipueiras", "Itacajá", 
+            "Itaguatins", "Itapiratins", "Itaporã do Tocantins", "Jaú do Tocantins", "Juarina", 
+            "Lagoa da Confusão", "Lagoa do Tocantins", "Lajeado", "Lavandeira", "Lizarda", 
+            "Luzinópolis", "Marianópolis do Tocantins", "Mateiros", "Maurilândia do Tocantins", "Miracema do Tocantins", 
+            "Miranorte", "Monte do Carmo", "Monte Santo do Tocantins", "Muricilândia", "Natividade", 
+            "Nazaré", "Nova Olinda", "Nova Rosalândia", "Novo Acordo", "Novo Alegre", 
+            "Novo Jardim", "Oliveira de Fátima", "Palmas", "Palmeirante", "Palmeiras do Tocantins", 
+            "Palmeirópolis", "Paraíso do Tocantins", "Paranã", "Pau D'Arco", "Pedro Afonso", 
+            "Peixe", "Pequizeiro", "Pindorama do Tocantins", "Piraquê", "Pium", 
+            "Ponte Alta do Bom Jesus", "Ponte Alta do Tocantins", "Porto Alegre do Tocantins", "Porto Nacional", "Praia Norte", 
+            "Presidente Kennedy", "Pugmil", "Recursolândia", "Riachinho", "Rio da Conceição", 
+            "Rio dos Bois", "Rio Sono", "Sampaio", "Sandolândia", "Santa Fé do Araguaia", 
+            "Santa Maria do Tocantins", "Santa Rita do Tocantins", "Santa Rosa do Tocantins", "Santa Tereza do Tocantins", "Santa Terezinha do Tocantins", 
+            "São Bento do Tocantins", "São Félix do Tocantins", "São Miguel do Tocantins", "São Salvador do Tocantins", "São Sebastião do Tocantins", 
+            "São Valério", "Silvanópolis", "Sítio Novo do Tocantins", "Sucupira", "Taguatinga", 
+            "Taipas do Tocantins", "Talismã", "Tocantínia", "Tocantinópolis", "Tupirama", 
+            "Tupiratins", "Wanderlândia", "Xambioá"
+        ];
+
+        // Estrutura de dados
+        let stockData = {}; // { "Município-Concentração": { ... } }
+        let movements = [];
+        let lastUpdateTime = null;
+
+        // Configurações de estoque
+        const CRITICAL_THRESHOLD = 10;
+        const LOW_THRESHOLD = 100;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tentar carregar dados salvos do localStorage
+            const savedData = localStorage.getItem('vitaminaA_data');
+            const savedMovements = localStorage.getItem('vitaminaA_movements');
+            const savedTime = localStorage.getItem('vitaminaA_lastUpdate');
+            
+            if (savedData && savedMovements) {
+                try {
+                    stockData = JSON.parse(savedData);
+                    movements = JSON.parse(savedMovements);
+                    lastUpdateTime = savedTime;
+                    updateDisplay();
+                    showInfo('Dados carregados do armazenamento local');
+                } catch (e) {
+                    console.error('Erro ao carregar dados salvos:', e);
+                    useSampleData();
+                }
+            } else {
+                useSampleData();
+            }
+        });
+
+        // Carregar dados da planilha Google Sheets
+        async function loadSheetData() {
+            const url = document.getElementById('sheetUrl').value.trim();
+            
+            if (!url) {
+                showError('Por favor, insira o link da planilha (formato CSV)');
+                return;
+            }
+
+            showLoading();
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Erro ao carregar a planilha');
+                
+                const csvText = await response.text();
+                parseCSVData(csvText);
+                showInfo('Dados carregados com sucesso da planilha!');
+            } catch (error) {
+                console.error('Erro:', error);
+                showError('Erro ao carregar a planilha. Verifique o link e tente novamente.');
+            }
+        }
+
+        // Processar dados CSV
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                showError('A planilha está vazia ou não contém dados');
+                return;
+            }
+
+            // Resetar dados
+            const newStockData = {};
+            const newMovements = [];
+
+            // Pular cabeçalho
+            for (let i = 1; i < lines.length; i++) {
+                const columns = parseCSVLine(lines[i]);
+                if (columns.length < 6) continue;
+
+                const [date, type, municipio, quantity, concentration, notes] = columns;
+                
+                // Validar município
+                if (!MUNICIPIOS_TOCANTINS.includes(municipio)) {
+                    console.warn(`Município não reconhecido: ${municipio}`);
+                    continue;
+                }
+
+                // Validar concentração
+                if (!['100.000UI', '200.000UI'].includes(concentration)) {
+                    console.warn(`Concentração inválida: ${concentration}`);
+                    continue;
+                }
+
+                const qty = parseFloat(quantity);
+                if (isNaN(qty) || qty <= 0) continue;
+
+                const key = `${municipio}-${concentration}`;
+                
+                // Inicializar estoque se necessário
+                if (!newStockData[key]) {
+                    newStockData[key] = {
+                        municipio: municipio,
+                        concentration: concentration,
+                        currentStock: 0,
+                        totalIn: 0,
+                        totalOut: 0,
+                        lastMovement: date,
+                        lastMovementType: type
+                    };
+                }
+
+                // Atualizar estoque baseado no tipo de movimento
+                if (type.toUpperCase().includes('ENTRADA')) {
+                    newStockData[key].currentStock += qty;
+                    newStockData[key].totalIn += qty;
+                } else if (type.toUpperCase().includes('SAÍDA')) {
+                    newStockData[key].currentStock -= qty;
+                    newStockData[key].totalOut += qty;
+                }
+
+                // Atualizar última movimentação
+                if (date > newStockData[key].lastMovement) {
+                    newStockData[key].lastMovement = date;
+                    newStockData[key].lastMovementType = type;
+                }
+
+                // Registrar movimento
+                newMovements.push({
+                    date: date,
+                    type: type,
+                    municipio: municipio,
+                    quantity: qty,
+                    concentration: concentration,
+                    notes: notes || ''
+                });
+            }
+
+            // Validar estoques negativos
+            for (let key in newStockData) {
+                if (newStockData[key].currentStock < 0) {
+                    console.warn(`Estoque negativo detectado para ${key}: ${newStockData[key].currentStock}`);
+                    newStockData[key].currentStock = 0;
+                }
+            }
+
+            stockData = newStockData;
+            movements = newMovements.sort((a, b) => b.date.localeCompare(a.date));
+            lastUpdateTime = new Date().toLocaleString('pt-BR');
+            
+            // Salvar no localStorage
+            localStorage.setItem('vitaminaA_data', JSON.stringify(stockData));
+            localStorage.setItem('vitaminaA_movements', JSON.stringify(movements));
+            localStorage.setItem('vitaminaA_lastUpdate', lastUpdateTime);
+            
+            updateDisplay();
+        }
+
+        // Função auxiliar para parsear linha CSV considerando aspas
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+
+        // Usar dados de exemplo
+        function useSampleData() {
+            const sampleStockData = {};
+            const sampleMovements = [];
+            const today = new Date().toLocaleDateString('pt-BR');
+            
+            // Gerar dados de exemplo para alguns municípios
+            MUNICIPIOS_TOCANTINS.slice(0, 20).forEach(municipio => {
+                ['100.000UI', '200.000UI'].forEach(concentration => {
+                    const key = `${municipio}-${concentration}`;
+                    const initialStock = Math.floor(Math.random() * 500) + 50;
+                    const totalIn = initialStock + Math.floor(Math.random() * 200);
+                    const totalOut = Math.floor(Math.random() * 150);
+                    
+                    sampleStockData[key] = {
+                        municipio: municipio,
+                        concentration: concentration,
+                        currentStock: initialStock,
+                        totalIn: totalIn,
+                        totalOut: totalOut,
+                        lastMovement: today,
+                        lastMovementType: Math.random() > 0.5 ? 'ENTRADA' : 'SAÍDA'
+                    };
+                    
+                    // Adicionar alguns movimentos de exemplo
+                    sampleMovements.push({
+                        date: today,
+                        type: 'ENTRADA',
+                        municipio: municipio,
+                        quantity: totalIn,
+                        concentration: concentration,
+                        notes: 'Exemplo - Entrada inicial'
+                    });
+                });
+            });
+
+            stockData = sampleStockData;
+            movements = sampleMovements;
+            lastUpdateTime = new Date().toLocaleString('pt-BR');
+            
+            localStorage.setItem('vitaminaA_data', JSON.stringify(stockData));
+            localStorage.setItem('vitaminaA_movements', JSON.stringify(movements));
+            localStorage.setItem('vitaminaA_lastUpdate', lastUpdateTime);
+            
+            updateDisplay();
+            showInfo('Dados de exemplo carregados. Configure o link da planilha para dados reais.');
+        }
+
+        // Atualizar display
+        function updateDisplay() {
+            updateSummary();
+            updateStockTable();
+            updateLastUpdate();
+        }
+
+        // Atualizar resumo
+        function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const values = Object.values(stockData);
+            
+            const totalMunicipios = new Set(values.map(v => v.municipio)).size;
+            const totalEstoque = values.reduce((sum, v) => sum + v.currentStock, 0);
+            const criticos = values.filter(v => v.currentStock <= CRITICAL_THRESHOLD).length;
+            const baixos = values.filter(v => v.currentStock > CRITICAL_THRESHOLD && v.currentStock <= LOW_THRESHOLD).length;
+            
+            const concentracao100k = values.filter(v => v.concentration === '100.000UI')
+                .reduce((sum, v) => sum + v.currentStock, 0);
+            const concentracao200k = values.filter(v => v.concentration === '200.000UI')
+                .reduce((sum, v) => sum + v.currentStock, 0);
+
+            summaryDiv.innerHTML = `
+                <div class="summary-item">
+                    <h3>${totalMunicipios}</h3>
+                    <p>Municípios com Estoque</p>
+                </div>
+                <div class="summary-item">
+                    <h3>${totalEstoque.toLocaleString()}</h3>
+                    <p>Total de Doses</p>
+                </div>
+                <div class="summary-item">
+                    <h3>${concentracao100k.toLocaleString()}</h3>
+                    <p>Doses 100.000UI</p>
+                </div>
+                <div class="summary-item">
+                    <h3>${concentracao200k.toLocaleString()}</h3>
+                    <p>Doses 200.000UI</p>
+                </div>
+                <div class="summary-item">
+                    <h3 style="color: #feb2b2;">${criticos}</h3>
+                    <p>Estoques Críticos</p>
+                </div>
+                <div class="summary-item">
+                    <h3 style="color: #fefcbf;">${baixos}</h3>
+                    <p>Estoques Baixos</p>
+                </div>
+            `;
+        }
+
+        // Atualizar tabela de estoque
+        function updateStockTable() {
+            const tbody = document.getElementById('stockTableBody');
+            const searchTerm = document.getElementById('searchMunicipio')?.value.toLowerCase() || '';
+            const filterConc = document.getElementById('filterConcentracao')?.value || '';
+            const filterStatus = document.getElementById('filterStatus')?.value || '';
+            
+            let filteredData = Object.values(stockData);
+            
+            // Aplicar filtros
+            if (searchTerm) {
+                filteredData = filteredData.filter(item => 
+                    item.municipio.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filterConc) {
+                filteredData = filteredData.filter(item => 
+                    item.concentration === filterConc
+                );
+            }
+            
+            if (filterStatus) {
+                filteredData = filteredData.filter(item => {
+                    if (filterStatus === 'critical') return item.currentStock <= CRITICAL_THRESHOLD;
+                    if (filterStatus === 'low') return item.currentStock > CRITICAL_THRESHOLD && item.currentStock <= LOW_THRESHOLD;
+                    if (filterStatus === 'normal') return item.currentStock > LOW_THRESHOLD;
+                    return true;
+                });
+            }
+            
+            // Ordenar por município e concentração
+            filteredData.sort((a, b) => {
+                if (a.municipio !== b.municipio) {
+                    return a.municipio.localeCompare(b.municipio);
+                }
+                return a.concentration.localeCompare(b.concentration);
+            });
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Nenhum dado encontrado</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredData.map(item => {
+                let status = 'normal';
+                let statusText = 'Normal';
+                let rowClass = '';
+                
+                if (item.currentStock <= CRITICAL_THRESHOLD) {
+                    status = 'critical';
+                    statusText = 'Crítico';
+                    rowClass = 'critical-stock';
+                } else if (item.currentStock <= LOW_THRESHOLD) {
+                    status = 'low';
+                    statusText = 'Baixo';
+                    rowClass = 'low-stock';
+                }
+                
+                const concClass = item.concentration === '100.000UI' ? 'concentration-100k' : 'concentration-200k';
+                
+                return `
+                    <tr class="${rowClass}">
+                        <td><strong>${item.municipio}</strong></td>
+                        <td>
+                            <span class="concentration-badge ${concClass}">${item.concentration}</span>
+                        </td>
+                        <td><strong>${item.currentStock.toLocaleString()}</strong> doses</td>
+                        <td><span class="stock-status ${status}">${statusText}</span></td>
+                        <td>${item.lastMovement}<br><small>${item.lastMovementType}</small></td>
+                        <td style="color: #38a169;">${item.totalIn.toLocaleString()}</td>
+                        <td style="color: #e53e3e;">${item.totalOut.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Atualizar data da última atualização
+        function updateLastUpdate() {
+            const lastUpdateDiv = document.getElementById('lastUpdate');
+            if (lastUpdateTime) {
+                lastUpdateDiv.innerHTML = `Última atualização: ${lastUpdateTime}`;
+            }
+        }
+
+        // Filtrar tabela
+        function filterTable() {
+            updateStockTable();
+        }
+
+        // Funções de UI
+        function showLoading() {
+            document.getElementById('stockTableBody').innerHTML = 
+                '<tr><td colspan="7" class="loading">Carregando dados da planilha</td></tr>';
+        }
+
+        function showError(message) {
+            const statusDiv = document.getElementById('dataStatus');
+            statusDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+            setTimeout(() => statusDiv.innerHTML = '', 5000);
+        }
+
+        function showInfo(message) {
+            const statusDiv = document.getElementById('dataStatus');
+            statusDiv.innerHTML = `<div class="info-message">ℹ️ ${message}</div>`;
+            setTimeout(() => statusDiv.innerHTML = '', 3000);
+        }
+
+        // Funções globais para os botões
+        window.loadSheetData = loadSheetData;
+        window.useSampleData = useSampleData;
+        window.filterTable = filterTable;
+    </script>
+</body>
+</html>
