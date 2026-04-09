@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoramento de Vitamina A - Municípios do Tocantins</title>
+    <title>Monitoramento de Vitamina A - Tocantins</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -38,12 +38,66 @@
             font-size: 1.1em;
         }
 
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .config-panel {
             background: white;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .config-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .config-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .config-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
         }
 
         .config-row {
@@ -66,12 +120,17 @@
             font-size: 14px;
         }
 
-        .config-group input {
+        .config-group input, .config-group select {
             width: 100%;
             padding: 10px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
+        }
+
+        .config-group select:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
         }
 
         .btn {
@@ -91,6 +150,12 @@
             transform: translateY(-2px);
         }
 
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .btn-success {
             background: #48bb78;
         }
@@ -99,10 +164,18 @@
             background: #38a169;
         }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+        .btn-warning {
+            background: #ed8936;
+        }
+
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 5px;
         }
 
         .card {
@@ -118,31 +191,6 @@
             font-size: 1.5em;
             border-bottom: 3px solid #667eea;
             padding-bottom: 10px;
-        }
-
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .summary-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            color: white;
-        }
-
-        .summary-item h3 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-
-        .summary-item p {
-            font-size: 14px;
-            opacity: 0.95;
         }
 
         .filter-bar {
@@ -162,13 +210,17 @@
             min-width: 200px;
         }
 
-        .stock-table {
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
-        .stock-table th {
+        th {
             background: #667eea;
             color: white;
             padding: 12px;
@@ -176,81 +228,102 @@
             font-weight: 600;
             position: sticky;
             top: 0;
+            white-space: nowrap;
         }
 
-        .stock-table td {
+        td {
             padding: 12px;
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .stock-table tr:hover {
+        tr:hover {
             background: #f7f7f7;
         }
 
-        .low-stock {
-            background: #fed7d7 !important;
-        }
-
-        .critical-stock {
-            background: #feb2b2 !important;
-        }
-
-        .stock-status {
-            font-weight: bold;
+        .status-badge {
+            display: inline-block;
             padding: 4px 8px;
             border-radius: 4px;
-            display: inline-block;
+            font-weight: bold;
+            font-size: 12px;
         }
 
-        .stock-status.normal {
+        .status-normal {
             background: #c6f6d5;
             color: #22543d;
         }
 
-        .stock-status.low {
+        .status-low {
             background: #fefcbf;
             color: #744210;
         }
 
-        .stock-status.critical {
+        .status-critical {
             background: #fed7d7;
             color: #742a2a;
         }
 
-        .concentration-badge {
+        .progress-bar {
+            width: 100px;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #48bb78;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.warning {
+            background: #ed8936;
+        }
+
+        .progress-fill.danger {
+            background: #f56565;
+        }
+
+        .percentage {
             font-size: 12px;
-            font-weight: bold;
             margin-left: 5px;
-        }
-
-        .concentration-100k {
-            background: #bee3f8;
-            color: #2c5282;
-        }
-
-        .concentration-200k {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
             color: #666;
         }
 
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+
+        .summary-card h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .summary-card p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .info-message {
+            background: #bee3f8;
+            color: #2c5282;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
         .error-message {
@@ -261,9 +334,9 @@
             margin-bottom: 20px;
         }
 
-        .info-message {
-            background: #bee3f8;
-            color: #2c5282;
+        .success-message {
+            background: #c6f6d5;
+            color: #22543d;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -276,16 +349,48 @@
             margin-top: 10px;
         }
 
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .sheet-id-example {
+            background: #f7f7f7;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .sheet-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .sheet-status.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .sheet-status.error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
             }
             
-            .stock-table {
+            table {
                 font-size: 12px;
             }
             
-            .stock-table th, .stock-table td {
+            th, td {
                 padding: 8px;
             }
         }
@@ -296,65 +401,147 @@
         <h1>💊 Monitoramento de Vitamina A</h1>
         <div class="subtitle">Estado do Tocantins - 139 Municípios</div>
         
+        <!-- Painel de Configuração Unificado -->
         <div class="config-panel">
-            <div class="config-row">
-                <div class="config-group">
-                    <label>📊 Link da Planilha Google Sheets (CSV):</label>
-                    <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv" value="">
+            <div class="config-section">
+                <h3>🔗 Configuração da Planilha Google Sheets</h3>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>📊 ID da Planilha:</label>
+                        <input type="text" id="sheetId" placeholder="Ex: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
+                        <div class="sheet-id-example">
+                            Cole o ID da planilha (código entre /d/ e /edit no link do Google Sheets)
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="loadSheetInfo()">📥 Carregar Planilha</button>
+                    <button class="btn btn-warning" onclick="useSampleData()">📋 Usar Dados de Exemplo</button>
                 </div>
-                <button class="btn btn-success" onclick="loadSheetData()">📥 Carregar Dados</button>
-                <button class="btn" onclick="useSampleData()">📋 Usar Dados de Exemplo</button>
+                <div id="sheetStatus" class="sheet-status"></div>
             </div>
-            <p style="margin-top: 10px; font-size: 12px; color: #666;">
-                ⚠️ A planilha deve ter as colunas: Data, Tipo (ENTRADA/SAÍDA), Município, Quantidade, Concentração (100.000UI/200.000UI), Observações
-            </p>
+
+            <div class="config-section">
+                <h3>📋 Configuração das Abas</h3>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>📦 Aba de Movimentações:</label>
+                        <select id="movSheetSelect" disabled>
+                            <option value="">Carregue a planilha primeiro</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label>🎯 Aba de Metas:</label>
+                        <select id="metaSheetSelect" disabled>
+                            <option value="">Carregue a planilha primeiro</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="loadMovimentacoesData()" id="btnLoadMov" disabled>📥 Carregar Movimentações</button>
+                    <button class="btn" onclick="loadMetasData()" id="btnLoadMeta" disabled style="margin-left: 10px;">📥 Carregar Metas</button>
+                </div>
+                <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                    💡 Dica: A planilha deve estar publicada na web (Arquivo → Compartilhar → Publicar na Web)
+                </p>
+            </div>
         </div>
 
-        <div class="dashboard">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('movimentacoes')">📋 Movimentações</button>
+            <button class="tab-btn" onclick="switchTab('metas')">🎯 Metas e Saldos</button>
+        </div>
+
+        <!-- TAB MOVIMENTAÇÕES -->
+        <div id="tab-movimentacoes" class="tab-content active">
             <div class="card">
-                <h2>📊 Estoque Atual por Município</h2>
+                <h2>📦 Estoque de Vitamina A</h2>
                 
-                <div class="summary" id="summary">
-                    <!-- Resumo será preenchido via JavaScript -->
-                </div>
+                <div id="movStatus"></div>
 
                 <div class="filter-bar">
-                    <input type="text" id="searchMunicipio" placeholder="🔍 Filtrar por município..." oninput="filterTable()">
-                    <select id="filterConcentracao" onchange="filterTable()">
+                    <input type="text" id="searchMunicipioMov" placeholder="🔍 Filtrar por município..." oninput="filterMovTable()">
+                    <select id="filterConcentracaoMov" onchange="filterMovTable()">
                         <option value="">Todas as Concentrações</option>
                         <option value="100.000UI">100.000UI</option>
                         <option value="200.000UI">200.000UI</option>
                     </select>
-                    <select id="filterStatus" onchange="filterTable()">
+                    <select id="filterStatusMov" onchange="filterMovTable()">
                         <option value="">Todos os Status</option>
-                        <option value="normal">Normal (> 100)</option>
-                        <option value="low">Baixo (11-100)</option>
-                        <option value="critical">Crítico (≤ 10)</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Baixo">Baixo</option>
+                        <option value="Crítico">Crítico</option>
                     </select>
                 </div>
 
-                <div id="dataStatus"></div>
-
-                <div style="overflow-x: auto;">
-                    <table class="stock-table" id="stockTable">
+                <div class="table-container">
+                    <table id="movTable">
                         <thead>
                             <tr>
                                 <th>Município</th>
                                 <th>Concentração</th>
-                                <th>Estoque Atual</th>
                                 <th>Status</th>
-                                <th>Última Movimentação</th>
-                                <th>Total Entradas</th>
-                                <th>Total Saídas</th>
+                                <th>Data</th>
+                                <th>Quantidade</th>
+                                <th>Lote</th>
                             </tr>
                         </thead>
-                        <tbody id="stockTableBody">
-                            <tr><td colspan="7" class="loading">Aguardando carregamento dos dados</td></tr>
+                        <tbody id="movTableBody">
+                            <tr><td colspan="6" class="loading">Aguardando carregamento dos dados</td></tr>
                         </tbody>
                     </table>
                 </div>
                 
-                <div class="last-update" id="lastUpdate"></div>
+                <div class="last-update" id="movLastUpdate"></div>
+            </div>
+        </div>
+
+        <!-- TAB METAS E SALDOS -->
+        <div id="tab-metas" class="tab-content">
+            <div class="card">
+                <h2>🎯 Metas e Saldos por Município</h2>
+                
+                <div id="metaStatus"></div>
+
+                <div class="summary-cards" id="metaSummary">
+                    <!-- Resumo será preenchido via JavaScript -->
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" id="searchMunicipioMeta" placeholder="🔍 Filtrar por município..." oninput="filterMetaTable()">
+                    <select id="filterStatusMeta" onchange="filterMetaTable()">
+                        <option value="">Todos os Status</option>
+                        <option value="completo">Meta Atingida (≥90%)</option>
+                        <option value="parcial">Parcial (50-89%)</option>
+                        <option value="critico">Crítico (<50%)</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="metaTable">
+                        <thead>
+                            <tr>
+                                <th>Município</th>
+                                <th colspan="3">100.000UI</th>
+                                <th colspan="3">200.000UI</th>
+                                <th>Ações</th>
+                            </tr>
+                            <tr style="background: #8b9cf5;">
+                                <th></th>
+                                <th>Meta</th>
+                                <th>Saldo</th>
+                                <th>Progresso</th>
+                                <th>Meta</th>
+                                <th>Saldo</th>
+                                <th>Progresso</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="metaTableBody">
+                            <tr><td colspan="8" class="loading">Aguardando carregamento dos dados</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="last-update" id="metaLastUpdate"></div>
             </div>
         </div>
     </div>
@@ -392,158 +579,725 @@
             "Tupiratins", "Wanderlândia", "Xambioá"
         ];
 
-        // Estrutura de dados
-        let stockData = {}; // { "Município-Concentração": { ... } }
-        let movements = [];
-        let lastUpdateTime = null;
+        // Dados das movimentações
+        let movimentacoes = [];
+        let movLastUpdate = null;
 
-        // Configurações de estoque
-        const CRITICAL_THRESHOLD = 10;
-        const LOW_THRESHOLD = 100;
+        // Dados das metas
+        let metasData = {};
+        let metaLastUpdate = null;
+
+        // ID da planilha atual
+        let currentSheetId = '';
+        let availableSheets = [];
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
-            // Tentar carregar dados salvos do localStorage
-            const savedData = localStorage.getItem('vitaminaA_data');
-            const savedMovements = localStorage.getItem('vitaminaA_movements');
-            const savedTime = localStorage.getItem('vitaminaA_lastUpdate');
+            loadSavedData();
             
-            if (savedData && savedMovements) {
-                try {
-                    stockData = JSON.parse(savedData);
-                    movements = JSON.parse(savedMovements);
-                    lastUpdateTime = savedTime;
-                    updateDisplay();
-                    showInfo('Dados carregados do armazenamento local');
-                } catch (e) {
-                    console.error('Erro ao carregar dados salvos:', e);
-                    useSampleData();
-                }
-            } else {
-                useSampleData();
+            // Tentar carregar ID da planilha salvo
+            const savedSheetId = localStorage.getItem('vitaminaA_sheetId');
+            if (savedSheetId) {
+                document.getElementById('sheetId').value = savedSheetId;
+                // Não carrega automaticamente para não sobrecarregar
             }
         });
 
-        // Carregar dados da planilha Google Sheets
-        async function loadSheetData() {
-            const url = document.getElementById('sheetUrl').value.trim();
+        function loadSavedData() {
+            // Carregar movimentações salvas
+            const savedMov = localStorage.getItem('vitaminaA_movimentacoes');
+            const savedMovTime = localStorage.getItem('vitaminaA_mov_time');
             
-            if (!url) {
-                showError('Por favor, insira o link da planilha (formato CSV)');
-                return;
+            if (savedMov) {
+                try {
+                    movimentacoes = JSON.parse(savedMov);
+                    movLastUpdate = savedMovTime;
+                    updateMovTable();
+                } catch (e) {
+                    console.error('Erro ao carregar movimentações:', e);
+                }
             }
 
-            showLoading();
+            // Carregar metas salvas
+            const savedMetas = localStorage.getItem('vitaminaA_metas');
+            const savedMetasTime = localStorage.getItem('vitaminaA_metas_time');
             
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Erro ao carregar a planilha');
-                
-                const csvText = await response.text();
-                parseCSVData(csvText);
-                showInfo('Dados carregados com sucesso da planilha!');
-            } catch (error) {
-                console.error('Erro:', error);
-                showError('Erro ao carregar a planilha. Verifique o link e tente novamente.');
+            if (savedMetas) {
+                try {
+                    metasData = JSON.parse(savedMetas);
+                    metaLastUpdate = savedMetasTime;
+                    updateMetaTable();
+                    updateMetaSummary();
+                } catch (e) {
+                    console.error('Erro ao carregar metas:', e);
+                }
             }
         }
 
-        // Processar dados CSV
-        function parseCSVData(csvText) {
-            const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length < 2) {
-                showError('A planilha está vazia ou não contém dados');
+        // Trocar entre abas
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Carregar informações da planilha (abas disponíveis)
+        async function loadSheetInfo() {
+            const sheetId = document.getElementById('sheetId').value.trim();
+            
+            if (!sheetId) {
+                showSheetStatus('Por favor, insira o ID da planilha', 'error');
                 return;
             }
 
-            // Resetar dados
-            const newStockData = {};
-            const newMovements = [];
+            currentSheetId = sheetId;
+            localStorage.setItem('vitaminaA_sheetId', sheetId);
+            
+            showSheetStatus('Carregando informações da planilha...', 'info');
+            
+            try {
+                // Tentar carregar metadados da planilha via API pública
+                const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                // Extrair JSON da resposta
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
+                if (!jsonMatch) {
+                    throw new Error('Não foi possível ler a planilha. Verifique se ela está publicada.');
+                }
+                
+                const data = JSON.parse(jsonMatch[1]);
+                
+                if (data.status === 'error') {
+                    throw new Error('Planilha não encontrada ou não está publicada.');
+                }
+                
+                // Extrair informações das abas
+                availableSheets = [];
+                if (data.table && data.table.cols) {
+                    // Infelizmente a API não retorna nome das abas diretamente
+                    // Vamos usar um método alternativo para descobrir as abas
+                    await discoverSheets(sheetId);
+                }
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showSheetStatus(`Erro: ${error.message}`, 'error');
+                
+                // Tentar método alternativo
+                await discoverSheets(sheetId);
+            }
+        }
 
-            // Pular cabeçalho
+        // Descobrir abas disponíveis
+        async function discoverSheets(sheetId) {
+            const commonSheetNames = ['Página1', 'Página2', 'Página3', 'Sheet1', 'Sheet2', 'Sheet3', 
+                                     'Movimentações', 'Metas', 'movimentacoes', 'metas', 'Estoque', 'Saldos'];
+            const foundSheets = [];
+            
+            showSheetStatus('Descobrindo abas disponíveis...', 'info');
+            
+            for (const sheetName of commonSheetNames) {
+                try {
+                    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    
+                    if (text && !text.includes('<!DOCTYPE html>') && !text.includes('_bootstrap') && text.trim().length > 0) {
+                        foundSheets.push(sheetName);
+                    }
+                } catch (e) {
+                    // Ignorar erros
+                }
+            }
+            
+            availableSheets = foundSheets;
+            updateSheetSelects();
+            
+            if (foundSheets.length > 0) {
+                showSheetStatus(`${foundSheets.length} aba(s) encontrada(s)!`, 'success');
+            } else {
+                showSheetStatus('Nenhuma aba encontrada. Digite o nome manualmente.', 'error');
+                // Adicionar opção para digitar manualmente
+                enableManualSheetInput();
+            }
+        }
+
+        function updateSheetSelects() {
+            const movSelect = document.getElementById('movSheetSelect');
+            const metaSelect = document.getElementById('metaSheetSelect');
+            
+            movSelect.innerHTML = '<option value="">Selecione a aba de movimentações</option>';
+            metaSelect.innerHTML = '<option value="">Selecione a aba de metas</option>';
+            
+            if (availableSheets.length > 0) {
+                availableSheets.forEach(sheet => {
+                    movSelect.innerHTML += `<option value="${sheet}">${sheet}</option>`;
+                    metaSelect.innerHTML += `<option value="${sheet}">${sheet}</option>`;
+                });
+                
+                movSelect.disabled = false;
+                metaSelect.disabled = false;
+                document.getElementById('btnLoadMov').disabled = false;
+                document.getElementById('btnLoadMeta').disabled = false;
+                
+                // Tentar selecionar automaticamente
+                const movSheet = availableSheets.find(s => 
+                    s.toLowerCase().includes('mov') || 
+                    s.toLowerCase().includes('entrada') || 
+                    s.toLowerCase().includes('estoque')
+                );
+                const metaSheet = availableSheets.find(s => 
+                    s.toLowerCase().includes('meta') || 
+                    s.toLowerCase().includes('saldo') || 
+                    s.toLowerCase().includes('objetivo')
+                );
+                
+                if (movSheet) movSelect.value = movSheet;
+                if (metaSheet) metaSelect.value = metaSheet;
+            }
+        }
+
+        function enableManualSheetInput() {
+            // Permitir digitação manual
+            const movSelect = document.getElementById('movSheetSelect');
+            const metaSelect = document.getElementById('metaSheetSelect');
+            
+            movSelect.innerHTML = '<option value="">Digite o nome da aba</option>';
+            metaSelect.innerHTML = '<option value="">Digite o nome da aba</option>';
+            
+            // Adicionar campos de texto
+            const movDiv = movSelect.parentElement;
+            const metaDiv = metaSelect.parentElement;
+            
+            movSelect.outerHTML = `<input type="text" id="movSheetSelect" placeholder="Ex: Página1" class="manual-input" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">`;
+            metaSelect.outerHTML = `<input type="text" id="metaSheetSelect" placeholder="Ex: Página2" class="manual-input" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">`;
+            
+            document.getElementById('btnLoadMov').disabled = false;
+            document.getElementById('btnLoadMeta').disabled = false;
+        }
+
+        function showSheetStatus(message, type) {
+            const statusDiv = document.getElementById('sheetStatus');
+            statusDiv.className = `sheet-status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        // Construir URL do Google Sheets CSV
+        function buildGoogleSheetsUrl(sheetName) {
+            if (!currentSheetId) {
+                currentSheetId = document.getElementById('sheetId').value.trim();
+            }
+            return `https://docs.google.com/spreadsheets/d/${currentSheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        }
+
+        // Formatar data para DD/MM/AAAA
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            
+            // Tentar detectar o formato
+            let day, month, year;
+            
+            // Formato ISO: YYYY-MM-DD
+            if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                const parts = dateStr.split('-');
+                year = parts[0];
+                month = parts[1];
+                day = parts[2].substring(0, 2);
+                return `${day}/${month}/${year}`;
+            }
+            
+            // Formato US: MM/DD/YYYY
+            if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
+                const parts = dateStr.split('/');
+                month = parts[0].padStart(2, '0');
+                day = parts[1].padStart(2, '0');
+                year = parts[2];
+                return `${day}/${month}/${year}`;
+            }
+            
+            // Formato BR: DD/MM/YYYY (já está correto)
+            if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
+                return dateStr;
+            }
+            
+            return dateStr;
+        }
+
+        // ============ FUNÇÕES PARA MOVIMENTAÇÕES ============
+        
+        async function loadMovimentacoesData() {
+            const sheetSelect = document.getElementById('movSheetSelect');
+            const sheetName = sheetSelect.value.trim();
+            
+            if (!sheetName) {
+                showMovError('Por favor, selecione ou digite o nome da aba');
+                return;
+            }
+
+            if (!currentSheetId) {
+                currentSheetId = document.getElementById('sheetId').value.trim();
+                if (!currentSheetId) {
+                    showMovError('Por favor, insira o ID da planilha primeiro');
+                    return;
+                }
+            }
+
+            showMovLoading();
+            
+            try {
+                const url = buildGoogleSheetsUrl(sheetName);
+                console.log('Carregando URL:', url);
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                
+                const csvText = await response.text();
+                
+                // Verificar se é HTML (erro comum)
+                if (csvText.includes('<!DOCTYPE html>') || csvText.includes('_bootstrap')) {
+                    throw new Error('A planilha não está publicada corretamente.');
+                }
+                
+                parseMovimentacoesCSV(csvText);
+                showMovSuccess('Dados de movimentações carregados com sucesso!');
+            } catch (error) {
+                console.error('Erro:', error);
+                showMovError(`Erro ao carregar: ${error.message}`);
+            }
+        }
+
+        function parseMovimentacoesCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                showMovError('A planilha está vazia ou não contém dados');
+                return;
+            }
+
+            const newMovimentacoes = [];
+
             for (let i = 1; i < lines.length; i++) {
-                const columns = parseCSVLine(lines[i]);
-                if (columns.length < 6) continue;
-
-                const [date, type, municipio, quantity, concentration, notes] = columns;
+                const line = lines[i];
+                if (!line.trim()) continue;
                 
-                // Validar município
-                if (!MUNICIPIOS_TOCANTINS.includes(municipio)) {
-                    console.warn(`Município não reconhecido: ${municipio}`);
+                const columns = parseCSVLine(line);
+                if (columns.length < 6) {
+                    console.warn(`Linha ${i + 1} ignorada: número insuficiente de colunas`);
                     continue;
                 }
 
-                // Validar concentração
-                if (!['100.000UI', '200.000UI'].includes(concentration)) {
-                    console.warn(`Concentração inválida: ${concentration}`);
+                let [municipio, concentracao, status, data, quantidade, lote] = columns;
+                
+                // Limpar aspas extras
+                municipio = municipio.replace(/^"|"$/g, '').trim();
+                concentracao = concentracao.replace(/^"|"$/g, '').trim();
+                status = status.replace(/^"|"$/g, '').trim();
+                data = data.replace(/^"|"$/g, '').trim();
+                lote = lote.replace(/^"|"$/g, '').trim();
+                
+                // Formatar data para padrão brasileiro
+                data = formatDateBR(data);
+                
+                // Converter quantidade
+                let qty = quantidade.replace(/^"|"$/g, '').replace(',', '.');
+                qty = parseFloat(qty);
+                
+                if (isNaN(qty)) {
+                    console.warn(`Quantidade inválida na linha ${i + 1}: ${quantidade}`);
                     continue;
                 }
 
-                const qty = parseFloat(quantity);
-                if (isNaN(qty) || qty <= 0) continue;
-
-                const key = `${municipio}-${concentration}`;
-                
-                // Inicializar estoque se necessário
-                if (!newStockData[key]) {
-                    newStockData[key] = {
-                        municipio: municipio,
-                        concentration: concentration,
-                        currentStock: 0,
-                        totalIn: 0,
-                        totalOut: 0,
-                        lastMovement: date,
-                        lastMovementType: type
-                    };
-                }
-
-                // Atualizar estoque baseado no tipo de movimento
-                if (type.toUpperCase().includes('ENTRADA')) {
-                    newStockData[key].currentStock += qty;
-                    newStockData[key].totalIn += qty;
-                } else if (type.toUpperCase().includes('SAÍDA')) {
-                    newStockData[key].currentStock -= qty;
-                    newStockData[key].totalOut += qty;
-                }
-
-                // Atualizar última movimentação
-                if (date > newStockData[key].lastMovement) {
-                    newStockData[key].lastMovement = date;
-                    newStockData[key].lastMovementType = type;
-                }
-
-                // Registrar movimento
-                newMovements.push({
-                    date: date,
-                    type: type,
-                    municipio: municipio,
-                    quantity: qty,
-                    concentration: concentration,
-                    notes: notes || ''
+                newMovimentacoes.push({
+                    municipio,
+                    concentracao,
+                    status,
+                    data,
+                    quantidade: qty,
+                    lote
                 });
             }
 
-            // Validar estoques negativos
-            for (let key in newStockData) {
-                if (newStockData[key].currentStock < 0) {
-                    console.warn(`Estoque negativo detectado para ${key}: ${newStockData[key].currentStock}`);
-                    newStockData[key].currentStock = 0;
+            movimentacoes = newMovimentacoes;
+            movLastUpdate = new Date().toLocaleString('pt-BR');
+            
+            localStorage.setItem('vitaminaA_movimentacoes', JSON.stringify(movimentacoes));
+            localStorage.setItem('vitaminaA_mov_time', movLastUpdate);
+            
+            updateMovTable();
+        }
+
+        function updateMovTable() {
+            const tbody = document.getElementById('movTableBody');
+            const lastUpdateDiv = document.getElementById('movLastUpdate');
+            
+            let filteredData = [...movimentacoes];
+            
+            // Aplicar filtros
+            const searchTerm = document.getElementById('searchMunicipioMov')?.value.toLowerCase() || '';
+            const filterConc = document.getElementById('filterConcentracaoMov')?.value || '';
+            const filterStatus = document.getElementById('filterStatusMov')?.value || '';
+            
+            if (searchTerm) {
+                filteredData = filteredData.filter(item => 
+                    item.municipio.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filterConc) {
+                filteredData = filteredData.filter(item => item.concentracao === filterConc);
+            }
+            
+            if (filterStatus) {
+                filteredData = filteredData.filter(item => item.status === filterStatus);
+            }
+            
+            // Ordenar por município e concentração
+            filteredData.sort((a, b) => {
+                if (a.municipio !== b.municipio) {
+                    return a.municipio.localeCompare(b.municipio);
+                }
+                return a.concentracao.localeCompare(b.concentracao);
+            });
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Nenhum dado encontrado</td></tr>';
+            } else {
+                tbody.innerHTML = filteredData.map(item => {
+                    let statusClass = 'status-normal';
+                    if (item.status === 'Baixo') statusClass = 'status-low';
+                    if (item.status === 'Crítico') statusClass = 'status-critical';
+                    
+                    return `
+                        <tr>
+                            <td><strong>${item.municipio}</strong></td>
+                            <td>${item.concentracao}</td>
+                            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                            <td>${item.data}</td>
+                            <td>${item.quantidade.toLocaleString('pt-BR')}</td>
+                            <td>${item.lote}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            if (movLastUpdate) {
+                lastUpdateDiv.innerHTML = `Última atualização: ${movLastUpdate}`;
+            }
+        }
+
+        function filterMovTable() {
+            updateMovTable();
+        }
+
+        // ============ FUNÇÕES PARA METAS ============
+        
+        async function loadMetasData() {
+            const sheetSelect = document.getElementById('metaSheetSelect');
+            const sheetName = sheetSelect.value.trim();
+            
+            if (!sheetName) {
+                showMetaError('Por favor, selecione ou digite o nome da aba');
+                return;
+            }
+
+            if (!currentSheetId) {
+                currentSheetId = document.getElementById('sheetId').value.trim();
+                if (!currentSheetId) {
+                    showMetaError('Por favor, insira o ID da planilha primeiro');
+                    return;
                 }
             }
 
-            stockData = newStockData;
-            movements = newMovements.sort((a, b) => b.date.localeCompare(a.date));
-            lastUpdateTime = new Date().toLocaleString('pt-BR');
+            showMetaLoading();
             
-            // Salvar no localStorage
-            localStorage.setItem('vitaminaA_data', JSON.stringify(stockData));
-            localStorage.setItem('vitaminaA_movements', JSON.stringify(movements));
-            localStorage.setItem('vitaminaA_lastUpdate', lastUpdateTime);
-            
-            updateDisplay();
+            try {
+                const url = buildGoogleSheetsUrl(sheetName);
+                console.log('Carregando URL:', url);
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                
+                const csvText = await response.text();
+                
+                // Verificar se é HTML (erro comum)
+                if (csvText.includes('<!DOCTYPE html>') || csvText.includes('_bootstrap')) {
+                    throw new Error('A planilha não está publicada corretamente.');
+                }
+                
+                parseMetasCSV(csvText);
+                showMetaSuccess('Dados de metas carregados com sucesso!');
+            } catch (error) {
+                console.error('Erro:', error);
+                showMetaError(`Erro ao carregar: ${error.message}`);
+            }
         }
 
-        // Função auxiliar para parsear linha CSV considerando aspas
+        function parseMetasCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                showMetaError('A planilha está vazia ou não contém dados');
+                return;
+            }
+
+            const newMetasData = {};
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
+                
+                const columns = parseCSVLine(line);
+                if (columns.length < 5) {
+                    console.warn(`Linha ${i + 1} ignorada: número insuficiente de colunas`);
+                    continue;
+                }
+
+                let [municipio, meta100, saldo100, meta200, saldo200] = columns;
+                
+                // Limpar aspas
+                municipio = municipio.replace(/^"|"$/g, '').trim();
+                
+                // Converter valores
+                const m100 = parseFloat(meta100.replace(/^"|"$/g, '').replace(',', '.')) || 0;
+                const s100 = parseFloat(saldo100.replace(/^"|"$/g, '').replace(',', '.')) || 0;
+                const m200 = parseFloat(meta200.replace(/^"|"$/g, '').replace(',', '.')) || 0;
+                const s200 = parseFloat(saldo200.replace(/^"|"$/g, '').replace(',', '.')) || 0;
+
+                newMetasData[municipio] = {
+                    meta100: m100,
+                    saldo100: s100,
+                    meta200: m200,
+                    saldo200: s200
+                };
+            }
+
+            metasData = newMetasData;
+            metaLastUpdate = new Date().toLocaleString('pt-BR');
+            
+            localStorage.setItem('vitaminaA_metas', JSON.stringify(metasData));
+            localStorage.setItem('vitaminaA_metas_time', metaLastUpdate);
+            
+            updateMetaTable();
+            updateMetaSummary();
+        }
+
+        function updateMetaSummary() {
+            const summaryDiv = document.getElementById('metaSummary');
+            const municipios = Object.keys(metasData);
+            
+            const totalMeta100 = municipios.reduce((sum, m) => sum + (metasData[m].meta100 || 0), 0);
+            const totalSaldo100 = municipios.reduce((sum, m) => sum + (metasData[m].saldo100 || 0), 0);
+            const totalMeta200 = municipios.reduce((sum, m) => sum + (metasData[m].meta200 || 0), 0);
+            const totalSaldo200 = municipios.reduce((sum, m) => sum + (metasData[m].saldo200 || 0), 0);
+            
+            const percentual100 = totalMeta100 > 0 ? (totalSaldo100 / totalMeta100 * 100) : 0;
+            const percentual200 = totalMeta200 > 0 ? (totalSaldo200 / totalMeta200 * 100) : 0;
+            
+            summaryDiv.innerHTML = `
+                <div class="summary-card">
+                    <h3>${municipios.length}</h3>
+                    <p>Municípios Cadastrados</p>
+                </div>
+                <div class="summary-card">
+                    <h3>${totalMeta100.toLocaleString('pt-BR')}</h3>
+                    <p>Meta Total 100.000UI</p>
+                    <small>${percentual100.toFixed(1)}% atingido</small>
+                </div>
+                <div class="summary-card">
+                    <h3>${totalSaldo100.toLocaleString('pt-BR')}</h3>
+                    <p>Saldo Total 100.000UI</p>
+                </div>
+                <div class="summary-card">
+                    <h3>${totalMeta200.toLocaleString('pt-BR')}</h3>
+                    <p>Meta Total 200.000UI</p>
+                    <small>${percentual200.toFixed(1)}% atingido</small>
+                </div>
+                <div class="summary-card">
+                    <h3>${totalSaldo200.toLocaleString('pt-BR')}</h3>
+                    <p>Saldo Total 200.000UI</p>
+                </div>
+            `;
+        }
+
+        function updateMetaTable() {
+            const tbody = document.getElementById('metaTableBody');
+            const lastUpdateDiv = document.getElementById('metaLastUpdate');
+            
+            let municipios = Object.keys(metasData);
+            
+            // Aplicar filtros
+            const searchTerm = document.getElementById('searchMunicipioMeta')?.value.toLowerCase() || '';
+            const filterStatus = document.getElementById('filterStatusMeta')?.value || '';
+            
+            if (searchTerm) {
+                municipios = municipios.filter(m => m.toLowerCase().includes(searchTerm));
+            }
+            
+            if (filterStatus) {
+                municipios = municipios.filter(m => {
+                    const data = metasData[m];
+                    const perc100 = data.meta100 > 0 ? (data.saldo100 / data.meta100) : 0;
+                    const perc200 = data.meta200 > 0 ? (data.saldo200 / data.meta200) : 0;
+                    const avgPerc = (perc100 + perc200) / 2;
+                    
+                    if (filterStatus === 'completo') return avgPerc >= 0.9;
+                    if (filterStatus === 'parcial') return avgPerc >= 0.5 && avgPerc < 0.9;
+                    if (filterStatus === 'critico') return avgPerc < 0.5;
+                    return true;
+                });
+            }
+            
+            municipios.sort();
+            
+            if (municipios.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Nenhum dado encontrado</td></tr>';
+            } else {
+                tbody.innerHTML = municipios.map(municipio => {
+                    const data = metasData[municipio];
+                    const perc100 = data.meta100 > 0 ? (data.saldo100 / data.meta100 * 100) : 0;
+                    const perc200 = data.meta200 > 0 ? (data.saldo200 / data.meta200 * 100) : 0;
+                    
+                    const getProgressClass = (perc) => {
+                        if (perc >= 90) return '';
+                        if (perc >= 50) return 'warning';
+                        return 'danger';
+                    };
+                    
+                    return `
+                        <tr>
+                            <td><strong>${municipio}</strong></td>
+                            <td>${data.meta100.toLocaleString('pt-BR')}</td>
+                            <td>${data.saldo100.toLocaleString('pt-BR')}</td>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill ${getProgressClass(perc100)}" style="width: ${Math.min(perc100, 100)}%"></div>
+                                    </div>
+                                    <span class="percentage">${perc100.toFixed(1)}%</span>
+                                </div>
+                            </td>
+                            <td>${data.meta200.toLocaleString('pt-BR')}</td>
+                            <td>${data.saldo200.toLocaleString('pt-BR')}</td>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill ${getProgressClass(perc200)}" style="width: ${Math.min(perc200, 100)}%"></div>
+                                    </div>
+                                    <span class="percentage">${perc200.toFixed(1)}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn-small btn" onclick="editMeta('${municipio}')">✏️</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            if (metaLastUpdate) {
+                lastUpdateDiv.innerHTML = `Última atualização: ${metaLastUpdate}`;
+            }
+        }
+
+        function filterMetaTable() {
+            updateMetaTable();
+        }
+
+        function editMeta(municipio) {
+            const data = metasData[municipio];
+            const newMeta100 = prompt(`Meta 100.000UI para ${municipio}:`, data.meta100);
+            if (newMeta100 === null) return;
+            
+            const newSaldo100 = prompt(`Saldo 100.000UI para ${municipio}:`, data.saldo100);
+            if (newSaldo100 === null) return;
+            
+            const newMeta200 = prompt(`Meta 200.000UI para ${municipio}:`, data.meta200);
+            if (newMeta200 === null) return;
+            
+            const newSaldo200 = prompt(`Saldo 200.000UI para ${municipio}:`, data.saldo200);
+            if (newSaldo200 === null) return;
+            
+            metasData[municipio] = {
+                meta100: parseFloat(newMeta100) || 0,
+                saldo100: parseFloat(newSaldo100) || 0,
+                meta200: parseFloat(newMeta200) || 0,
+                saldo200: parseFloat(newSaldo200) || 0
+            };
+            
+            localStorage.setItem('vitaminaA_metas', JSON.stringify(metasData));
+            updateMetaTable();
+            updateMetaSummary();
+        }
+
+        // Usar dados de exemplo
+        function useSampleData() {
+            useSampleMovimentacoes();
+            useSampleMetas();
+        }
+
+        function useSampleMovimentacoes() {
+            const sampleData = [];
+            const today = new Date().toLocaleDateString('pt-BR');
+            const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('pt-BR');
+            
+            MUNICIPIOS_TOCANTINS.slice(0, 30).forEach(municipio => {
+                ['100.000UI', '200.000UI'].forEach(conc => {
+                    const status = Math.random() > 0.7 ? 'Baixo' : (Math.random() > 0.9 ? 'Crítico' : 'Normal');
+                    sampleData.push({
+                        municipio,
+                        concentracao: conc,
+                        status,
+                        data: Math.random() > 0.5 ? today : yesterday,
+                        quantidade: Math.floor(Math.random() * 500) + 10,
+                        lote: `LOTE${Math.floor(Math.random() * 1000)}`
+                    });
+                });
+            });
+
+            movimentacoes = sampleData;
+            movLastUpdate = new Date().toLocaleString('pt-BR');
+            
+            localStorage.setItem('vitaminaA_movimentacoes', JSON.stringify(movimentacoes));
+            localStorage.setItem('vitaminaA_mov_time', movLastUpdate);
+            
+            updateMovTable();
+            showMovSuccess('Dados de exemplo carregados!');
+        }
+
+        function useSampleMetas() {
+            const sampleMetas = {};
+            
+            MUNICIPIOS_TOCANTINS.forEach(municipio => {
+                const meta100 = Math.floor(Math.random() * 1000) + 500;
+                const meta200 = Math.floor(Math.random() * 800) + 400;
+                
+                sampleMetas[municipio] = {
+                    meta100: meta100,
+                    saldo100: Math.floor(Math.random() * meta100),
+                    meta200: meta200,
+                    saldo200: Math.floor(Math.random() * meta200)
+                };
+            });
+
+            metasData = sampleMetas;
+            metaLastUpdate = new Date().toLocaleString('pt-BR');
+            
+            localStorage.setItem('vitaminaA_metas', JSON.stringify(metasData));
+            localStorage.setItem('vitaminaA_metas_time', metaLastUpdate);
+            
+            updateMetaTable();
+            updateMetaSummary();
+            showMetaSuccess('Dados de exemplo carregados!');
+        }
+
+        // ============ FUNÇÕES AUXILIARES ============
+        
         function parseCSVLine(line) {
             const result = [];
             let current = '';
@@ -555,227 +1309,59 @@
                 if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim());
+                    result.push(current);
                     current = '';
                 } else {
                     current += char;
                 }
             }
             
-            result.push(current.trim());
+            result.push(current);
             return result;
         }
 
-        // Usar dados de exemplo
-        function useSampleData() {
-            const sampleStockData = {};
-            const sampleMovements = [];
-            const today = new Date().toLocaleDateString('pt-BR');
-            
-            // Gerar dados de exemplo para alguns municípios
-            MUNICIPIOS_TOCANTINS.slice(0, 20).forEach(municipio => {
-                ['100.000UI', '200.000UI'].forEach(concentration => {
-                    const key = `${municipio}-${concentration}`;
-                    const initialStock = Math.floor(Math.random() * 500) + 50;
-                    const totalIn = initialStock + Math.floor(Math.random() * 200);
-                    const totalOut = Math.floor(Math.random() * 150);
-                    
-                    sampleStockData[key] = {
-                        municipio: municipio,
-                        concentration: concentration,
-                        currentStock: initialStock,
-                        totalIn: totalIn,
-                        totalOut: totalOut,
-                        lastMovement: today,
-                        lastMovementType: Math.random() > 0.5 ? 'ENTRADA' : 'SAÍDA'
-                    };
-                    
-                    // Adicionar alguns movimentos de exemplo
-                    sampleMovements.push({
-                        date: today,
-                        type: 'ENTRADA',
-                        municipio: municipio,
-                        quantity: totalIn,
-                        concentration: concentration,
-                        notes: 'Exemplo - Entrada inicial'
-                    });
-                });
-            });
-
-            stockData = sampleStockData;
-            movements = sampleMovements;
-            lastUpdateTime = new Date().toLocaleString('pt-BR');
-            
-            localStorage.setItem('vitaminaA_data', JSON.stringify(stockData));
-            localStorage.setItem('vitaminaA_movements', JSON.stringify(movements));
-            localStorage.setItem('vitaminaA_lastUpdate', lastUpdateTime);
-            
-            updateDisplay();
-            showInfo('Dados de exemplo carregados. Configure o link da planilha para dados reais.');
+        // UI Functions
+        function showMovLoading() {
+            document.getElementById('movTableBody').innerHTML = '<tr><td colspan="6" class="loading">Carregando dados...</td></tr>';
         }
 
-        // Atualizar display
-        function updateDisplay() {
-            updateSummary();
-            updateStockTable();
-            updateLastUpdate();
-        }
-
-        // Atualizar resumo
-        function updateSummary() {
-            const summaryDiv = document.getElementById('summary');
-            const values = Object.values(stockData);
-            
-            const totalMunicipios = new Set(values.map(v => v.municipio)).size;
-            const totalEstoque = values.reduce((sum, v) => sum + v.currentStock, 0);
-            const criticos = values.filter(v => v.currentStock <= CRITICAL_THRESHOLD).length;
-            const baixos = values.filter(v => v.currentStock > CRITICAL_THRESHOLD && v.currentStock <= LOW_THRESHOLD).length;
-            
-            const concentracao100k = values.filter(v => v.concentration === '100.000UI')
-                .reduce((sum, v) => sum + v.currentStock, 0);
-            const concentracao200k = values.filter(v => v.concentration === '200.000UI')
-                .reduce((sum, v) => sum + v.currentStock, 0);
-
-            summaryDiv.innerHTML = `
-                <div class="summary-item">
-                    <h3>${totalMunicipios}</h3>
-                    <p>Municípios com Estoque</p>
-                </div>
-                <div class="summary-item">
-                    <h3>${totalEstoque.toLocaleString()}</h3>
-                    <p>Total de Doses</p>
-                </div>
-                <div class="summary-item">
-                    <h3>${concentracao100k.toLocaleString()}</h3>
-                    <p>Doses 100.000UI</p>
-                </div>
-                <div class="summary-item">
-                    <h3>${concentracao200k.toLocaleString()}</h3>
-                    <p>Doses 200.000UI</p>
-                </div>
-                <div class="summary-item">
-                    <h3 style="color: #feb2b2;">${criticos}</h3>
-                    <p>Estoques Críticos</p>
-                </div>
-                <div class="summary-item">
-                    <h3 style="color: #fefcbf;">${baixos}</h3>
-                    <p>Estoques Baixos</p>
-                </div>
-            `;
-        }
-
-        // Atualizar tabela de estoque
-        function updateStockTable() {
-            const tbody = document.getElementById('stockTableBody');
-            const searchTerm = document.getElementById('searchMunicipio')?.value.toLowerCase() || '';
-            const filterConc = document.getElementById('filterConcentracao')?.value || '';
-            const filterStatus = document.getElementById('filterStatus')?.value || '';
-            
-            let filteredData = Object.values(stockData);
-            
-            // Aplicar filtros
-            if (searchTerm) {
-                filteredData = filteredData.filter(item => 
-                    item.municipio.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            if (filterConc) {
-                filteredData = filteredData.filter(item => 
-                    item.concentration === filterConc
-                );
-            }
-            
-            if (filterStatus) {
-                filteredData = filteredData.filter(item => {
-                    if (filterStatus === 'critical') return item.currentStock <= CRITICAL_THRESHOLD;
-                    if (filterStatus === 'low') return item.currentStock > CRITICAL_THRESHOLD && item.currentStock <= LOW_THRESHOLD;
-                    if (filterStatus === 'normal') return item.currentStock > LOW_THRESHOLD;
-                    return true;
-                });
-            }
-            
-            // Ordenar por município e concentração
-            filteredData.sort((a, b) => {
-                if (a.municipio !== b.municipio) {
-                    return a.municipio.localeCompare(b.municipio);
-                }
-                return a.concentration.localeCompare(b.concentration);
-            });
-            
-            if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Nenhum dado encontrado</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = filteredData.map(item => {
-                let status = 'normal';
-                let statusText = 'Normal';
-                let rowClass = '';
-                
-                if (item.currentStock <= CRITICAL_THRESHOLD) {
-                    status = 'critical';
-                    statusText = 'Crítico';
-                    rowClass = 'critical-stock';
-                } else if (item.currentStock <= LOW_THRESHOLD) {
-                    status = 'low';
-                    statusText = 'Baixo';
-                    rowClass = 'low-stock';
-                }
-                
-                const concClass = item.concentration === '100.000UI' ? 'concentration-100k' : 'concentration-200k';
-                
-                return `
-                    <tr class="${rowClass}">
-                        <td><strong>${item.municipio}</strong></td>
-                        <td>
-                            <span class="concentration-badge ${concClass}">${item.concentration}</span>
-                        </td>
-                        <td><strong>${item.currentStock.toLocaleString()}</strong> doses</td>
-                        <td><span class="stock-status ${status}">${statusText}</span></td>
-                        <td>${item.lastMovement}<br><small>${item.lastMovementType}</small></td>
-                        <td style="color: #38a169;">${item.totalIn.toLocaleString()}</td>
-                        <td style="color: #e53e3e;">${item.totalOut.toLocaleString()}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Atualizar data da última atualização
-        function updateLastUpdate() {
-            const lastUpdateDiv = document.getElementById('lastUpdate');
-            if (lastUpdateTime) {
-                lastUpdateDiv.innerHTML = `Última atualização: ${lastUpdateTime}`;
-            }
-        }
-
-        // Filtrar tabela
-        function filterTable() {
-            updateStockTable();
-        }
-
-        // Funções de UI
-        function showLoading() {
-            document.getElementById('stockTableBody').innerHTML = 
-                '<tr><td colspan="7" class="loading">Carregando dados da planilha</td></tr>';
-        }
-
-        function showError(message) {
-            const statusDiv = document.getElementById('dataStatus');
+        function showMovError(message) {
+            const statusDiv = document.getElementById('movStatus');
             statusDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
-            setTimeout(() => statusDiv.innerHTML = '', 5000);
+            setTimeout(() => statusDiv.innerHTML = '', 8000);
         }
 
-        function showInfo(message) {
-            const statusDiv = document.getElementById('dataStatus');
-            statusDiv.innerHTML = `<div class="info-message">ℹ️ ${message}</div>`;
+        function showMovSuccess(message) {
+            const statusDiv = document.getElementById('movStatus');
+            statusDiv.innerHTML = `<div class="success-message">✅ ${message}</div>`;
             setTimeout(() => statusDiv.innerHTML = '', 3000);
         }
 
-        // Funções globais para os botões
-        window.loadSheetData = loadSheetData;
+        function showMetaLoading() {
+            document.getElementById('metaTableBody').innerHTML = '<tr><td colspan="8" class="loading">Carregando dados...</td></tr>';
+        }
+
+        function showMetaError(message) {
+            const statusDiv = document.getElementById('metaStatus');
+            statusDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+            setTimeout(() => statusDiv.innerHTML = '', 8000);
+        }
+
+        function showMetaSuccess(message) {
+            const statusDiv = document.getElementById('metaStatus');
+            statusDiv.innerHTML = `<div class="success-message">✅ ${message}</div>`;
+            setTimeout(() => statusDiv.innerHTML = '', 3000);
+        }
+
+        // Funções globais
+        window.switchTab = switchTab;
+        window.loadSheetInfo = loadSheetInfo;
+        window.loadMovimentacoesData = loadMovimentacoesData;
         window.useSampleData = useSampleData;
-        window.filterTable = filterTable;
+        window.filterMovTable = filterMovTable;
+        window.loadMetasData = loadMetasData;
+        window.filterMetaTable = filterMetaTable;
+        window.editMeta = editMeta;
     </script>
 </body>
 </html>
