@@ -120,7 +120,7 @@
             font-size: 14px;
         }
 
-        .config-group input, .config-group select {
+        .config-group select {
             width: 100%;
             padding: 10px;
             border: 2px solid #e0e0e0;
@@ -295,7 +295,7 @@
 
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -355,20 +355,16 @@
             color: #666;
         }
 
-        .sheet-id-example {
-            background: #f7f7f7;
+        .sheet-status {
+            margin-top: 15px;
             padding: 10px;
             border-radius: 5px;
-            font-family: monospace;
-            margin-top: 5px;
-            font-size: 12px;
+            font-size: 14px;
         }
 
-        .sheet-status {
-            margin-top: 10px;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 14px;
+        .sheet-status.info {
+            background: #bee3f8;
+            color: #2c5282;
         }
 
         .sheet-status.success {
@@ -379,6 +375,15 @@
         .sheet-status.error {
             background: #fed7d7;
             color: #742a2a;
+        }
+
+        .auto-load-info {
+            background: #f0f4ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #667eea;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
@@ -393,6 +398,10 @@
             th, td {
                 padding: 8px;
             }
+            
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -401,48 +410,35 @@
         <h1>💊 Monitoramento de Vitamina A</h1>
         <div class="subtitle">Estado do Tocantins - 139 Municípios</div>
         
-        <!-- Painel de Configuração Unificado -->
+        <!-- Painel de Configuração -->
         <div class="config-panel">
-            <div class="config-section">
-                <h3>🔗 Configuração da Planilha Google Sheets</h3>
-                <div class="config-row">
-                    <div class="config-group">
-                        <label>📊 ID da Planilha:</label>
-                        <input type="text" id="sheetId" placeholder="Ex: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
-                        <div class="sheet-id-example">
-                            Cole o ID da planilha (código entre /d/ e /edit no link do Google Sheets)
-                        </div>
-                    </div>
-                    <button class="btn btn-success" onclick="loadSheetInfo()">📥 Carregar Planilha</button>
-                    <button class="btn btn-warning" onclick="useSampleData()">📋 Usar Dados de Exemplo</button>
-                </div>
-                <div id="sheetStatus" class="sheet-status"></div>
+            <div class="auto-load-info">
+                ✅ Planilha configurada - Carregamento automático ativado
             </div>
-
+            
             <div class="config-section">
-                <h3>📋 Configuração das Abas</h3>
+                <h3>📋 Selecione as Abas para Carregar</h3>
                 <div class="config-row">
                     <div class="config-group">
                         <label>📦 Aba de Movimentações:</label>
                         <select id="movSheetSelect" disabled>
-                            <option value="">Carregue a planilha primeiro</option>
+                            <option value="">Carregando abas disponíveis...</option>
                         </select>
                     </div>
                     <div class="config-group">
                         <label>🎯 Aba de Metas:</label>
                         <select id="metaSheetSelect" disabled>
-                            <option value="">Carregue a planilha primeiro</option>
+                            <option value="">Carregando abas disponíveis...</option>
                         </select>
                     </div>
                 </div>
                 <div style="margin-top: 15px;">
-                    <button class="btn" onclick="loadMovimentacoesData()" id="btnLoadMov" disabled>📥 Carregar Movimentações</button>
-                    <button class="btn" onclick="loadMetasData()" id="btnLoadMeta" disabled style="margin-left: 10px;">📥 Carregar Metas</button>
+                    <button class="btn btn-success" onclick="loadMovimentacoesData()" id="btnLoadMov" disabled>📥 Carregar Movimentações</button>
+                    <button class="btn btn-success" onclick="loadMetasData()" id="btnLoadMeta" disabled style="margin-left: 10px;">📥 Carregar Metas</button>
+                    <button class="btn btn-warning" onclick="recarregarPlanilha()" style="margin-left: 10px;">🔄 Recarregar Abas</button>
                 </div>
-                <p style="margin-top: 10px; font-size: 12px; color: #666;">
-                    💡 Dica: A planilha deve estar publicada na web (Arquivo → Compartilhar → Publicar na Web)
-                </p>
             </div>
+            <div id="sheetStatus" class="sheet-status info"></div>
         </div>
 
         <div class="tabs">
@@ -547,6 +543,13 @@
     </div>
 
     <script>
+        // ============================================================
+        // CONFIGURAÇÃO: COLOQUE AQUI O ID DA SUA PLANILHA GOOGLE SHEETS
+        // ============================================================
+        const SHEET_ID = '108lJlhQu80SD_9n8rW1c4oLbybj9TtkK'; // <-- COLE O ID DA PLANILHA AQUI (entre /d/ e /edit)
+        // Exemplo: const SHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+        // ============================================================
+
         // Lista completa dos 139 municípios do Tocantins
         const MUNICIPIOS_TOCANTINS = [
             "Abreulândia", "Aguiarnópolis", "Aliança do Tocantins", "Almas", "Alvorada", 
@@ -587,20 +590,21 @@
         let metasData = {};
         let metaLastUpdate = null;
 
-        // ID da planilha atual
-        let currentSheetId = '';
+        // Abas disponíveis
         let availableSheets = [];
 
-        // Inicialização
+        // Inicialização automática
         document.addEventListener('DOMContentLoaded', function() {
-            loadSavedData();
-            
-            // Tentar carregar ID da planilha salvo
-            const savedSheetId = localStorage.getItem('vitaminaA_sheetId');
-            if (savedSheetId) {
-                document.getElementById('sheetId').value = savedSheetId;
-                // Não carrega automaticamente para não sobrecarregar
+            // Verificar se o ID foi configurado
+            if (SHEET_ID === 'S108lJlhQu80SD_9n8rW1c4oLbybj9TtkK') {
+                showSheetStatus('⚠️ Configure o ID da planilha no código (linha ~330)', 'error');
+                document.getElementById('movSheetSelect').innerHTML = '<option value="">Configure o ID da planilha</option>';
+                document.getElementById('metaSheetSelect').innerHTML = '<option value="">Configure o ID da planilha</option>';
+                return;
             }
+            
+            loadSavedData();
+            carregarAbasAutomaticamente();
         });
 
         function loadSavedData() {
@@ -634,6 +638,18 @@
             }
         }
 
+        // Carregar abas automaticamente ao iniciar
+        async function carregarAbasAutomaticamente() {
+            showSheetStatus('Carregando abas da planilha...', 'info');
+            await discoverSheets(SHEET_ID);
+        }
+
+        // Recarregar planilha (função pública)
+        async function recarregarPlanilha() {
+            showSheetStatus('Recarregando abas da planilha...', 'info');
+            await discoverSheets(SHEET_ID);
+        }
+
         // Trocar entre abas
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -647,62 +663,16 @@
             event.target.classList.add('active');
         }
 
-        // Carregar informações da planilha (abas disponíveis)
-        async function loadSheetInfo() {
-            const sheetId = document.getElementById('sheetId').value.trim();
-            
-            if (!sheetId) {
-                showSheetStatus('Por favor, insira o ID da planilha', 'error');
-                return;
-            }
-
-            currentSheetId = sheetId;
-            localStorage.setItem('vitaminaA_sheetId', sheetId);
-            
-            showSheetStatus('Carregando informações da planilha...', 'info');
-            
-            try {
-                // Tentar carregar metadados da planilha via API pública
-                const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
-                const response = await fetch(url);
-                const text = await response.text();
-                
-                // Extrair JSON da resposta
-                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
-                if (!jsonMatch) {
-                    throw new Error('Não foi possível ler a planilha. Verifique se ela está publicada.');
-                }
-                
-                const data = JSON.parse(jsonMatch[1]);
-                
-                if (data.status === 'error') {
-                    throw new Error('Planilha não encontrada ou não está publicada.');
-                }
-                
-                // Extrair informações das abas
-                availableSheets = [];
-                if (data.table && data.table.cols) {
-                    // Infelizmente a API não retorna nome das abas diretamente
-                    // Vamos usar um método alternativo para descobrir as abas
-                    await discoverSheets(sheetId);
-                }
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                showSheetStatus(`Erro: ${error.message}`, 'error');
-                
-                // Tentar método alternativo
-                await discoverSheets(sheetId);
-            }
-        }
-
         // Descobrir abas disponíveis
         async function discoverSheets(sheetId) {
-            const commonSheetNames = ['Página1', 'Página2', 'Página3', 'Sheet1', 'Sheet2', 'Sheet3', 
-                                     'Movimentações', 'Metas', 'movimentacoes', 'metas', 'Estoque', 'Saldos'];
+            const commonSheetNames = [
+                'Página1', 'Página2', 'Página3', 'Página4', 'Página5',
+                'Sheet1', 'Sheet2', 'Sheet3', 'Sheet4', 'Sheet5',
+                'Movimentações', 'Metas', 'movimentacoes', 'metas', 
+                'Estoque', 'Saldos', 'Entradas', 'Saidas',
+                'VitaminaA', 'Dados', 'Planilha1', 'Planilha2'
+            ];
             const foundSheets = [];
-            
-            showSheetStatus('Descobrindo abas disponíveis...', 'info');
             
             for (const sheetName of commonSheetNames) {
                 try {
@@ -722,10 +692,9 @@
             updateSheetSelects();
             
             if (foundSheets.length > 0) {
-                showSheetStatus(`${foundSheets.length} aba(s) encontrada(s)!`, 'success');
+                showSheetStatus(`${foundSheets.length} aba(s) encontrada(s)! Selecione nos menus acima.`, 'success');
             } else {
-                showSheetStatus('Nenhuma aba encontrada. Digite o nome manualmente.', 'error');
-                // Adicionar opção para digitar manualmente
+                showSheetStatus('Nenhuma aba encontrada. Verifique se a planilha está publicada.', 'error');
                 enableManualSheetInput();
             }
         }
@@ -752,12 +721,14 @@
                 const movSheet = availableSheets.find(s => 
                     s.toLowerCase().includes('mov') || 
                     s.toLowerCase().includes('entrada') || 
-                    s.toLowerCase().includes('estoque')
+                    s.toLowerCase().includes('estoque') ||
+                    s === 'Página1'
                 );
                 const metaSheet = availableSheets.find(s => 
                     s.toLowerCase().includes('meta') || 
                     s.toLowerCase().includes('saldo') || 
-                    s.toLowerCase().includes('objetivo')
+                    s.toLowerCase().includes('objetivo') ||
+                    s === 'Página2'
                 );
                 
                 if (movSheet) movSelect.value = movSheet;
@@ -766,16 +737,11 @@
         }
 
         function enableManualSheetInput() {
-            // Permitir digitação manual
             const movSelect = document.getElementById('movSheetSelect');
             const metaSelect = document.getElementById('metaSheetSelect');
             
-            movSelect.innerHTML = '<option value="">Digite o nome da aba</option>';
-            metaSelect.innerHTML = '<option value="">Digite o nome da aba</option>';
-            
-            // Adicionar campos de texto
-            const movDiv = movSelect.parentElement;
-            const metaDiv = metaSelect.parentElement;
+            movSelect.innerHTML = '<option value="">Digite o nome da aba abaixo</option>';
+            metaSelect.innerHTML = '<option value="">Digite o nome da aba abaixo</option>';
             
             movSelect.outerHTML = `<input type="text" id="movSheetSelect" placeholder="Ex: Página1" class="manual-input" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">`;
             metaSelect.outerHTML = `<input type="text" id="metaSheetSelect" placeholder="Ex: Página2" class="manual-input" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">`;
@@ -792,17 +758,13 @@
 
         // Construir URL do Google Sheets CSV
         function buildGoogleSheetsUrl(sheetName) {
-            if (!currentSheetId) {
-                currentSheetId = document.getElementById('sheetId').value.trim();
-            }
-            return `https://docs.google.com/spreadsheets/d/${currentSheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+            return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         }
 
         // Formatar data para DD/MM/AAAA
         function formatDateBR(dateStr) {
             if (!dateStr) return '';
             
-            // Tentar detectar o formato
             let day, month, year;
             
             // Formato ISO: YYYY-MM-DD
@@ -824,10 +786,6 @@
             }
             
             // Formato BR: DD/MM/YYYY (já está correto)
-            if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-                return dateStr;
-            }
-            
             return dateStr;
         }
 
@@ -842,14 +800,6 @@
                 return;
             }
 
-            if (!currentSheetId) {
-                currentSheetId = document.getElementById('sheetId').value.trim();
-                if (!currentSheetId) {
-                    showMovError('Por favor, insira o ID da planilha primeiro');
-                    return;
-                }
-            }
-
             showMovLoading();
             
             try {
@@ -861,7 +811,6 @@
                 
                 const csvText = await response.text();
                 
-                // Verificar se é HTML (erro comum)
                 if (csvText.includes('<!DOCTYPE html>') || csvText.includes('_bootstrap')) {
                     throw new Error('A planilha não está publicada corretamente.');
                 }
@@ -895,24 +844,18 @@
 
                 let [municipio, concentracao, status, data, quantidade, lote] = columns;
                 
-                // Limpar aspas extras
                 municipio = municipio.replace(/^"|"$/g, '').trim();
                 concentracao = concentracao.replace(/^"|"$/g, '').trim();
                 status = status.replace(/^"|"$/g, '').trim();
                 data = data.replace(/^"|"$/g, '').trim();
                 lote = lote.replace(/^"|"$/g, '').trim();
                 
-                // Formatar data para padrão brasileiro
                 data = formatDateBR(data);
                 
-                // Converter quantidade
                 let qty = quantidade.replace(/^"|"$/g, '').replace(',', '.');
                 qty = parseFloat(qty);
                 
-                if (isNaN(qty)) {
-                    console.warn(`Quantidade inválida na linha ${i + 1}: ${quantidade}`);
-                    continue;
-                }
+                if (isNaN(qty)) continue;
 
                 newMovimentacoes.push({
                     municipio,
@@ -939,7 +882,6 @@
             
             let filteredData = [...movimentacoes];
             
-            // Aplicar filtros
             const searchTerm = document.getElementById('searchMunicipioMov')?.value.toLowerCase() || '';
             const filterConc = document.getElementById('filterConcentracaoMov')?.value || '';
             const filterStatus = document.getElementById('filterStatusMov')?.value || '';
@@ -958,7 +900,6 @@
                 filteredData = filteredData.filter(item => item.status === filterStatus);
             }
             
-            // Ordenar por município e concentração
             filteredData.sort((a, b) => {
                 if (a.municipio !== b.municipio) {
                     return a.municipio.localeCompare(b.municipio);
@@ -1007,14 +948,6 @@
                 return;
             }
 
-            if (!currentSheetId) {
-                currentSheetId = document.getElementById('sheetId').value.trim();
-                if (!currentSheetId) {
-                    showMetaError('Por favor, insira o ID da planilha primeiro');
-                    return;
-                }
-            }
-
             showMetaLoading();
             
             try {
@@ -1026,7 +959,6 @@
                 
                 const csvText = await response.text();
                 
-                // Verificar se é HTML (erro comum)
                 if (csvText.includes('<!DOCTYPE html>') || csvText.includes('_bootstrap')) {
                     throw new Error('A planilha não está publicada corretamente.');
                 }
@@ -1053,17 +985,12 @@
                 if (!line.trim()) continue;
                 
                 const columns = parseCSVLine(line);
-                if (columns.length < 5) {
-                    console.warn(`Linha ${i + 1} ignorada: número insuficiente de colunas`);
-                    continue;
-                }
+                if (columns.length < 5) continue;
 
                 let [municipio, meta100, saldo100, meta200, saldo200] = columns;
                 
-                // Limpar aspas
                 municipio = municipio.replace(/^"|"$/g, '').trim();
                 
-                // Converter valores
                 const m100 = parseFloat(meta100.replace(/^"|"$/g, '').replace(',', '.')) || 0;
                 const s100 = parseFloat(saldo100.replace(/^"|"$/g, '').replace(',', '.')) || 0;
                 const m200 = parseFloat(meta200.replace(/^"|"$/g, '').replace(',', '.')) || 0;
@@ -1099,11 +1026,8 @@
             const percentual100 = totalMeta100 > 0 ? (totalSaldo100 / totalMeta100 * 100) : 0;
             const percentual200 = totalMeta200 > 0 ? (totalSaldo200 / totalMeta200 * 100) : 0;
             
+            // Apenas 4 cards (removido o de municípios cadastrados)
             summaryDiv.innerHTML = `
-                <div class="summary-card">
-                    <h3>${municipios.length}</h3>
-                    <p>Municípios Cadastrados</p>
-                </div>
                 <div class="summary-card">
                     <h3>${totalMeta100.toLocaleString('pt-BR')}</h3>
                     <p>Meta Total 100.000UI</p>
@@ -1131,7 +1055,6 @@
             
             let municipios = Object.keys(metasData);
             
-            // Aplicar filtros
             const searchTerm = document.getElementById('searchMunicipioMeta')?.value.toLowerCase() || '';
             const filterStatus = document.getElementById('filterStatusMeta')?.value || '';
             
@@ -1235,67 +1158,6 @@
             updateMetaSummary();
         }
 
-        // Usar dados de exemplo
-        function useSampleData() {
-            useSampleMovimentacoes();
-            useSampleMetas();
-        }
-
-        function useSampleMovimentacoes() {
-            const sampleData = [];
-            const today = new Date().toLocaleDateString('pt-BR');
-            const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('pt-BR');
-            
-            MUNICIPIOS_TOCANTINS.slice(0, 30).forEach(municipio => {
-                ['100.000UI', '200.000UI'].forEach(conc => {
-                    const status = Math.random() > 0.7 ? 'Baixo' : (Math.random() > 0.9 ? 'Crítico' : 'Normal');
-                    sampleData.push({
-                        municipio,
-                        concentracao: conc,
-                        status,
-                        data: Math.random() > 0.5 ? today : yesterday,
-                        quantidade: Math.floor(Math.random() * 500) + 10,
-                        lote: `LOTE${Math.floor(Math.random() * 1000)}`
-                    });
-                });
-            });
-
-            movimentacoes = sampleData;
-            movLastUpdate = new Date().toLocaleString('pt-BR');
-            
-            localStorage.setItem('vitaminaA_movimentacoes', JSON.stringify(movimentacoes));
-            localStorage.setItem('vitaminaA_mov_time', movLastUpdate);
-            
-            updateMovTable();
-            showMovSuccess('Dados de exemplo carregados!');
-        }
-
-        function useSampleMetas() {
-            const sampleMetas = {};
-            
-            MUNICIPIOS_TOCANTINS.forEach(municipio => {
-                const meta100 = Math.floor(Math.random() * 1000) + 500;
-                const meta200 = Math.floor(Math.random() * 800) + 400;
-                
-                sampleMetas[municipio] = {
-                    meta100: meta100,
-                    saldo100: Math.floor(Math.random() * meta100),
-                    meta200: meta200,
-                    saldo200: Math.floor(Math.random() * meta200)
-                };
-            });
-
-            metasData = sampleMetas;
-            metaLastUpdate = new Date().toLocaleString('pt-BR');
-            
-            localStorage.setItem('vitaminaA_metas', JSON.stringify(metasData));
-            localStorage.setItem('vitaminaA_metas_time', metaLastUpdate);
-            
-            updateMetaTable();
-            updateMetaSummary();
-            showMetaSuccess('Dados de exemplo carregados!');
-        }
-
         // ============ FUNÇÕES AUXILIARES ============
         
         function parseCSVLine(line) {
@@ -1355,9 +1217,8 @@
 
         // Funções globais
         window.switchTab = switchTab;
-        window.loadSheetInfo = loadSheetInfo;
+        window.recarregarPlanilha = recarregarPlanilha;
         window.loadMovimentacoesData = loadMovimentacoesData;
-        window.useSampleData = useSampleData;
         window.filterMovTable = filterMovTable;
         window.loadMetasData = loadMetasData;
         window.filterMetaTable = filterMetaTable;
