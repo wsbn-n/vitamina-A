@@ -613,6 +613,21 @@
             event.target.classList.add('active');
         }
 
+        // Formatar data para DD/MM/AAAA
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            
+            if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                const parts = dateStr.split('-');
+                return `${parts[2].substring(0,2)}/${parts[1]}/${parts[0]}`;
+            }
+            
+            if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
+                const parts = dateStr.split('/');
+                return `${parts[1].padStart(2,'0')}/${parts[0].padStart(2,'0')}/${parts[2]}`;
+            }
+            
+            return dateStr;
         }
 
         // ============ MOVIMENTAÇÕES ============
