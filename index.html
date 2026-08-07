@@ -613,19 +613,7 @@
             event.target.classList.add('active');
         }
 
-        // Formatar data para DD/MM/AAAA
-        function formatDateBR(dateStr) {
-            if (!dateStr) return '';
-            
-            
-            
-            if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-                const parts = dateStr.split('/');
-                return `${parts[1].padStart(2,'0')}/${parts[0].padStart(2,'0')}/${parts[2]}`;
-            }
-            
-            return dateStr;
-        }
+        
 
         // ============ MOVIMENTAÇÕES ============
         
